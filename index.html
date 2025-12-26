@@ -89,6 +89,7 @@
         const Target = (props) => <IconBase {...props}><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></IconBase>;
         const ThumbsUp = (props) => <IconBase {...props}><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2h0a3.13 3.13 0 0 1 3 3.88Z"/></IconBase>;
         const Volume2 = (props) => <IconBase {...props}><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></IconBase>;
+        const Download = (props) => <IconBase {...props}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></IconBase>;
 
         // --- Mock Data ---
         const LEADERBOARD_DATA = [
@@ -141,13 +142,16 @@
             // Marquee State
             const [marqueeIdx, setMarqueeIdx] = useState(0);
 
+            // Share Poster State
+            const [showSharePoster, setShowSharePoster] = useState(false);
+
             // --- Handlers ---
 
             // Marquee Timer
             useEffect(() => {
                 const interval = setInterval(() => {
                 setMarqueeIdx(prev => (prev + 1) % MARQUEE_LIST.length);
-                }, 2500); // Changed from 3000 to 2500
+                }, 2500); 
                 return () => clearInterval(interval);
             }, []);
 
@@ -236,6 +240,11 @@
                 setCards([ { val: 1.88, id: 1 }, { val: 2.88, id: 2 }, { val: 4.88, id: 3 }, { val: 6.88, id: 4 }, { val: 8.88, id: 5 } ]);
             };
 
+            // 4. Handle Share Click
+            const handleShareClick = () => {
+                setShowSharePoster(true);
+            };
+
             return (
                 <div className="min-h-screen bg-pattern font-sans text-gray-800 pb-20 relative overflow-x-hidden w-full max-w-md mx-auto shadow-2xl">
                 
@@ -299,7 +308,7 @@
                             </div>
                         </div>
                         
-                        {/* NEW: Marquee Section at bottom of Dashboard Card */}
+                        {/* Marquee Section */}
                         <div className="h-px w-full bg-red-100"></div>
                         <div className="px-4 py-2.5 bg-red-50 flex items-center gap-2">
                             <div className="bg-red-200 p-1 rounded-full shadow-sm"><Volume2 size={12} className="text-red-700"/></div>
@@ -322,7 +331,7 @@
                 {/* --- 3. Gameplay Modules --- */}
                 <div className="px-4 mt-6 space-y-6">
 
-                    {/* Module 1: Sign In (Optimized UI: justify-between) */}
+                    {/* Module 1: Sign In */}
                     <div className="bg-[#FFF8E7] rounded-xl overflow-hidden shadow-md border border-red-200">
                         <div className="bg-red-800 text-yellow-100 px-4 py-2 flex justify-between items-center">
                             <div>
@@ -332,7 +341,6 @@
                             <div className="bg-yellow-500 text-red-900 text-xs font-bold px-2 py-1 rounded">已连续{signInDays}天</div>
                         </div>
                         <div className="p-4">
-                            {/* Optimized Calendar Layout: justify-between instead of scroll */}
                             <div className="flex justify-between items-start mb-4 mt-2">
                                 {[1, 2, 3, 4, 5, 6, 7].map((day) => {
                                     const isPast = day <= signInDays;
@@ -358,7 +366,6 @@
                                                     </div>
                                                 )}
                                                 
-                                                {/* Checkmark for past days */}
                                                 {isPast && (
                                                     <div className="absolute -right-1 -bottom-1 bg-green-500 rounded-full p-0.5 border border-white">
                                                         <CheckCircle2 size={8} className="text-white"/>
@@ -369,7 +376,7 @@
                                             {isMilestone ? (
                                                 <span className="text-[9px] font-bold text-red-600 bg-red-50 px-1 rounded border border-red-100 leading-tight">¥{milestoneAmounts[day]}</span>
                                             ) : (
-                                                <span className="h-3"></span> // Spacer
+                                                <span className="h-3"></span>
                                             )}
                                         </div>
                                     )
@@ -506,7 +513,7 @@
                                         <Shuffle size={16} className="animate-spin"/> 游戏中...
                                     </button>
                                 )}
-                                <button className="flex-1 bg-white border border-red-300 text-red-600 py-2.5 rounded-xl font-bold flex items-center justify-center gap-1 shadow-sm active:bg-red-50">
+                                <button onClick={handleShareClick} className="flex-1 bg-white border border-red-300 text-red-600 py-2.5 rounded-xl font-bold flex items-center justify-center gap-1 shadow-sm active:bg-red-50">
                                     <Share2 size={16}/> 分享拿福气
                                 </button>
                             </div>
@@ -664,19 +671,91 @@
                         </div>
                     </div>
                     <div className="flex-1 ml-4">
-                        <button className="w-full bg-red-600 text-white px-5 py-2 rounded-lg text-sm font-bold shadow-md animate-pulse flex items-center justify-center gap-2">
+                        <button onClick={handleShareClick} className="w-full bg-red-600 text-white px-5 py-2 rounded-lg text-sm font-bold shadow-md animate-pulse flex items-center justify-center gap-2">
                             <Share2 size={16}/> 分享赚分
                         </button>
                     </div>
                 </div>
 
+                {/* --- Share Poster Modal --- */}
+                {showSharePoster && (
+                    <div className="fixed inset-0 z-[80] flex flex-col items-center justify-center bg-black/80 p-6" onClick={() => setShowSharePoster(false)}>
+                        <div className="bg-white w-full max-w-sm rounded-2xl overflow-hidden shadow-2xl relative" onClick={e => e.stopPropagation()}>
+                            {/* Removed top-right close button */}
+                            
+                            {/* Header / Red Bg */}
+                            <div className="bg-gradient-to-b from-red-600 to-red-700 p-6 pt-8 text-center text-white relative overflow-hidden">
+                                {/* Decorative Circles */}
+                                <div className="absolute top-0 left-0 w-20 h-20 bg-yellow-400/20 rounded-full -translate-x-1/2 -translate-y-1/2"></div>
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-400/10 rounded-full translate-x-1/3 -translate-y-1/3"></div>
+                                
+                                <div className="flex flex-col items-center relative z-10">
+                                    <div className="w-16 h-16 rounded-full border-2 border-yellow-300 p-0.5 bg-white mb-2 shadow-md">
+                                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="avatar" className="w-full h-full rounded-full" />
+                                    </div>
+                                    <h3 className="font-bold text-xl">张师傅</h3>
+                                    <p className="text-xs opacity-90 flex items-center gap-1 mt-1 bg-black/20 px-2 py-0.5 rounded-full">
+                                        <MapPin size={10} /> 朝阳区 · 阳光社区
+                                    </p>
+                                    
+                                    <div className="mt-4 text-sm font-medium text-yellow-100 italic leading-relaxed px-4">
+                                        “金马迎春开工吉，副业接单勤赚钱。<br/>您的支持是我最大的动力，<br/>祝您新的一年万事如意！”
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Service Card */}
+                            <div className="p-5 bg-white">
+                                <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 flex items-center justify-between mb-6 shadow-sm">
+                                    <div>
+                                        <div className="text-gray-500 text-xs mb-1">推荐服务</div>
+                                        <div className="font-bold text-gray-800 text-lg">专业家庭保洁</div>
+                                    </div>
+                                    <div className="text-right">
+                                        <div className="text-red-600 font-black text-xl">
+                                            <span className="text-xs font-normal text-gray-500 mr-0.5">新春特惠</span>
+                                            ¥128<span className="text-xs">起</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* QR Code Area */}
+                                <div className="flex items-center justify-center gap-4">
+                                    <div className="bg-white p-2 border-2 border-dashed border-gray-300 rounded-lg">
+                                        {/* Simulated QR Code (Placeholder) */}
+                                        <div className="w-20 h-20 bg-gray-900 flex items-center justify-center text-white text-[8px] font-mono text-center leading-tight">
+                                            [二维码]<br/>模拟区域
+                                        </div>
+                                    </div>
+                                    <div className="text-left">
+                                        <p className="font-bold text-gray-800 text-sm">长按识别二维码</p>
+                                        <p className="text-xs text-gray-500 mt-0.5">为我点赞 助力开工</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {/* Save Button */}
+                            <div className="bg-gray-50 p-3 text-center border-t border-gray-100">
+                                <button className="text-red-600 font-bold text-sm flex items-center justify-center gap-1 mx-auto">
+                                    <Download size={14}/> 保存海报分享
+                                </button>
+                            </div>
+                        </div>
+                        <button onClick={() => setShowSharePoster(false)} className="mt-6 bg-white/20 p-2 rounded-full border border-white/50 text-white backdrop-blur-sm hover:bg-white/30 transition-colors">
+                            <X size={24}/>
+                        </button>
+                    </div>
+                )}
+
                 {/* --- Sign In Reward Popup --- */}
                 {showSignInPopup && (
-                    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/80 px-4">
-                        <div className="relative animate-popup">
+                    <div className="fixed inset-0 z-[70] flex flex-col items-center justify-center bg-black/80 px-4">
+                        <div className="relative animate-popup w-full max-w-xs flex flex-col items-center">
+                            {/* Rays */}
                             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-radial from-yellow-300 to-transparent opacity-50 blur-xl animate-pulse"></div>
-                            <div className="bg-red-600 w-64 rounded-xl border-4 border-yellow-400 shadow-2xl relative overflow-hidden text-center pt-8 pb-12 px-4">
-                                <button onClick={closeSignInPopup} className="absolute top-2 right-2 text-red-200 hover:text-white"><X size={20}/></button>
+                            
+                            <div className="bg-red-600 w-full rounded-xl border-4 border-yellow-400 shadow-2xl relative overflow-hidden text-center pt-8 pb-12 px-4 z-10">
+                                {/* Removed top-right close button */}
                                 <div className="absolute -top-10 -left-10 w-24 h-24 bg-red-700 rounded-full"></div>
                                 <div className="absolute -top-10 -right-10 w-24 h-24 bg-red-700 rounded-full"></div>
                                 <h3 className="text-yellow-200 font-bold text-lg mb-2 tracking-widest">开工大吉</h3>
@@ -689,17 +768,20 @@
                                     开心收下
                                 </button>
                             </div>
+                            <button onClick={closeSignInPopup} className="mt-6 bg-white/20 p-2 rounded-full border border-white/50 text-white backdrop-blur-sm hover:bg-white/30 transition-colors z-10">
+                                <X size={24}/>
+                            </button>
                         </div>
                     </div>
                 )}
 
                 {/* --- Draw Result Popup (New) --- */}
                 {showDrawPopup && (
-                    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/80 px-4">
-                        <div className="relative animate-popup">
+                    <div className="fixed inset-0 z-[70] flex flex-col items-center justify-center bg-black/80 px-4">
+                        <div className="relative animate-popup w-full max-w-xs flex flex-col items-center">
                             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-radial from-yellow-300 to-transparent opacity-50 blur-xl animate-pulse"></div>
-                            <div className="bg-red-600 w-64 rounded-xl border-4 border-yellow-400 shadow-2xl relative overflow-hidden text-center pt-8 pb-12 px-4">
-                                <button onClick={() => setShowDrawPopup(false)} className="absolute top-2 right-2 text-red-200 hover:text-white"><X size={20}/></button>
+                            <div className="bg-red-600 w-full rounded-xl border-4 border-yellow-400 shadow-2xl relative overflow-hidden text-center pt-8 pb-12 px-4 z-10">
+                                {/* Removed top-right close button */}
                                 <div className="absolute -top-10 -left-10 w-24 h-24 bg-red-700 rounded-full"></div>
                                 <div className="absolute -top-10 -right-10 w-24 h-24 bg-red-700 rounded-full"></div>
                                 <h3 className="text-yellow-200 font-bold text-lg mb-2 tracking-widest">手气炸裂</h3>
@@ -714,42 +796,50 @@
                                     放入钱包
                                 </button>
                             </div>
+                            <button onClick={() => setShowDrawPopup(false)} className="mt-6 bg-white/20 p-2 rounded-full border border-white/50 text-white backdrop-blur-sm hover:bg-white/30 transition-colors z-10">
+                                <X size={24}/>
+                            </button>
                         </div>
                     </div>
                 )}
 
                 {/* --- Rank Up Popup (Simulated) --- */}
                 {showRankPopup && (
-                    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 px-4">
-                        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                            {[...Array(20)].map((_, i) => (
-                                <div key={i} className="absolute w-2 h-4 bg-yellow-400 animate-pulse" 
-                                    style={{
-                                        left: `${Math.random() * 100}%`, 
-                                        top: `${Math.random() * 100}%`,
-                                        transform: `rotate(${Math.random() * 360}deg)`
-                                    }}>
-                                </div>
-                            ))}
-                        </div>
-                        <div className="bg-gradient-to-b from-yellow-100 to-white w-full max-w-sm rounded-2xl p-6 text-center relative shadow-2xl border-4 border-yellow-400 transform scale-100 transition-all">
-                            <button onClick={() => setShowRankPopup(false)} className="absolute top-2 right-2 text-gray-400"><X/></button>
-                            <div className="text-4xl mb-2">🚀</div>
-                            <h2 className="text-2xl font-black text-red-600 mb-2">排名飙升!</h2>
-                            <p className="text-gray-600 mb-4">
-                                恭喜！您刚刚超越了 <span className="text-red-600 font-bold">3</span> 位服务者<br/>
-                                现居 <span className="text-2xl font-bold text-red-600">No.{rank}</span>
-                            </p>
-                            <div className="bg-red-50 p-3 rounded-lg border border-red-100 mb-4">
-                                <p className="text-sm text-red-800">
-                                    距离 <strong>388元</strong> 现金大奖<br/>
-                                    仅差 <strong>15</strong> 积分！
+                    <div className="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-black/80 px-4">
+                        <div className="relative w-full max-w-sm flex flex-col items-center">
+                            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                                {[...Array(20)].map((_, i) => (
+                                    <div key={i} className="absolute w-2 h-4 bg-yellow-400 animate-pulse" 
+                                        style={{
+                                            left: `${Math.random() * 100}%`, 
+                                            top: `${Math.random() * 100}%`,
+                                            transform: `rotate(${Math.random() * 360}deg)`
+                                        }}>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="bg-gradient-to-b from-yellow-100 to-white w-full rounded-2xl p-6 text-center relative shadow-2xl border-4 border-yellow-400 transform scale-100 transition-all z-10">
+                                {/* Removed top-right close button */}
+                                <div className="text-4xl mb-2">🚀</div>
+                                <h2 className="text-2xl font-black text-red-600 mb-2">排名飙升!</h2>
+                                <p className="text-gray-600 mb-4">
+                                    恭喜！您刚刚超越了 <span className="text-red-600 font-bold">3</span> 位服务者<br/>
+                                    现居 <span className="text-2xl font-bold text-red-600">No.{rank}</span>
                                 </p>
+                                <div className="bg-red-50 p-3 rounded-lg border border-red-100 mb-4">
+                                    <p className="text-sm text-red-800">
+                                        距离 <strong>388元</strong> 现金大奖<br/>
+                                        仅差 <strong>15</strong> 积分！
+                                    </p>
+                                </div>
+                                <div className="flex gap-3">
+                                    <button className="flex-1 py-2 rounded-full border-2 border-yellow-500 text-yellow-700 font-bold">炫耀一下</button>
+                                    <button className="flex-1 py-2 rounded-full bg-gradient-to-r from-red-500 to-red-700 text-white font-bold shadow-lg" onClick={() => setShowRankPopup(false)}>继续冲榜</button>
+                                </div>
                             </div>
-                            <div className="flex gap-3">
-                                <button className="flex-1 py-2 rounded-full border-2 border-yellow-500 text-yellow-700 font-bold">炫耀一下</button>
-                                <button className="flex-1 py-2 rounded-full bg-gradient-to-r from-red-500 to-red-700 text-white font-bold shadow-lg" onClick={() => setShowRankPopup(false)}>继续冲榜</button>
-                            </div>
+                            <button onClick={() => setShowRankPopup(false)} className="mt-6 bg-white/20 p-2 rounded-full border border-white/50 text-white backdrop-blur-sm hover:bg-white/30 transition-colors z-10">
+                                <X size={24}/>
+                            </button>
                         </div>
                     </div>
                 )}
