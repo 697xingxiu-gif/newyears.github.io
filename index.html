@@ -128,6 +128,7 @@
             // Lucky Draw State
             const [drawPhase, setDrawPhase] = useState('idle'); 
             const [selectedCardIndex, setSelectedCardIndex] = useState(null);
+            const [showDrawPopup, setShowDrawPopup] = useState(false); // New: Draw Popup State
             const [cards, setCards] = useState([
                 { val: 1.88, id: 1 }, { val: 2.88, id: 2 }, { val: 4.88, id: 3 }, { val: 6.88, id: 4 }, { val: 8.88, id: 5 }
             ]);
@@ -221,11 +222,17 @@
                 if (drawPhase !== 'picking') return;
                 setSelectedCardIndex(index);
                 setDrawPhase('result');
+                
+                // Show popup after card flip animation
+                setTimeout(() => {
+                    setShowDrawPopup(true);
+                }, 800);
             };
 
             const resetDraw = () => {
                 setDrawPhase('idle');
                 setSelectedCardIndex(null);
+                setShowDrawPopup(false);
                 setCards([ { val: 1.88, id: 1 }, { val: 2.88, id: 2 }, { val: 4.88, id: 3 }, { val: 6.88, id: 4 }, { val: 8.88, id: 5 } ]);
             };
 
@@ -358,7 +365,7 @@
                                                     </div>
                                                 )}
                                             </div>
-                                            <span className="text-[9px] text-gray-500 mb-0.5">第{day}天</span>
+                                            <span className="text-xs text-gray-600 mb-0.5 font-medium">第{day}天</span>
                                             {isMilestone ? (
                                                 <span className="text-[9px] font-bold text-red-600 bg-red-50 px-1 rounded border border-red-100 leading-tight">¥{milestoneAmounts[day]}</span>
                                             ) : (
@@ -448,14 +455,7 @@
                                 })}
                             </div>
 
-                            {drawPhase === 'result' && (
-                                <div className="text-center mb-2">
-                                    <div className="text-red-600 font-bold text-lg animate-bounce">
-                                        {selectedCardIndex !== null && `🎉 恭喜获得 ${cards[selectedCardIndex].val} 元!`}
-                                    </div>
-                                </div>
-                            )}
-
+                            {/* Status Text (Only show if shuffling/picking) */}
                             {(drawPhase === 'shuffling' || drawPhase === 'picking' || drawPhase === 'preparing') && (
                                 <div className="text-center mb-2">
                                     <div className="text-red-800 font-bold animate-pulse">
@@ -540,7 +540,7 @@
                                             <div className={`absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 rotate-45 border-r-2 border-b-2 ${item.done ? 'bg-red-600 border-red-600' : 'bg-white border-red-200'}`}></div>
                                         </div>
                                         <div className={`w-3 h-3 rounded-full border-2 ${item.done ? 'bg-yellow-400 border-red-500 ring-2 ring-red-200' : 'bg-white border-red-200'}`}></div>
-                                        <span className={`text-[10px] font-medium ${item.done ? 'text-red-700' : 'text-gray-400'}`}>完成第{item.step}单</span>
+                                        <span className={`text-xs font-bold mt-1 ${item.done ? 'text-red-700' : 'text-gray-400'}`}>完成第{item.step}单</span>
                                     </div>
                                 ))}
                             </div>
@@ -549,7 +549,8 @@
                                 <div className="flex flex-wrap gap-1">
                                     <span className="text-[10px] bg-white border border-red-100 px-1 rounded text-gray-600">20-49元: +5分</span>
                                     <span className="text-[10px] bg-white border border-red-100 px-1 rounded text-gray-600">50-99元: +10分</span>
-                                    <span className="text-[10px] bg-white border border-red-100 px-1 rounded text-gray-600">100-199元: +20分</span>
+                                    <span className="text-[10px] bg-white border border-red-100 px-1 rounded text-gray-600">100-199元: +15分</span>
+                                    <span className="text-[10px] bg-white border border-red-100 px-1 rounded text-gray-600">200-299元: +20分</span>
                                     <span className="text-[10px] bg-white border border-red-100 px-1 rounded text-gray-600">300元+: +30分</span>
                                 </div>
                             </div>
@@ -564,7 +565,7 @@
                 {/* --- 4. Leaderboard --- */}
                 <section id="leaderboard" className="mt-8 px-4 pb-12">
                     <div className="text-center mb-6">
-                        <h2 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-b from-yellow-300 to-yellow-500 drop-shadow-sm stroke-red-800">【马年迎薪·社区服务高手榜】</h2>
+                        <h2 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-b from-yellow-300 to-yellow-500 drop-shadow-sm stroke-red-800">【马上迎薪·社区服务高手榜】</h2>
                         <p className="text-yellow-100 text-xs mt-1">服务之星 榜上有名 现金大奖等你拿</p>
                     </div>
                     <div className="flex justify-center items-end mb-6 gap-2">
@@ -686,6 +687,31 @@
                                 </div>
                                 <button onClick={closeSignInPopup} className="w-full bg-yellow-400 text-red-800 font-bold py-2 rounded-full shadow-lg active:scale-95 transition-transform">
                                     开心收下
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* --- Draw Result Popup (New) --- */}
+                {showDrawPopup && (
+                    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/80 px-4">
+                        <div className="relative animate-popup">
+                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-radial from-yellow-300 to-transparent opacity-50 blur-xl animate-pulse"></div>
+                            <div className="bg-red-600 w-64 rounded-xl border-4 border-yellow-400 shadow-2xl relative overflow-hidden text-center pt-8 pb-12 px-4">
+                                <button onClick={() => setShowDrawPopup(false)} className="absolute top-2 right-2 text-red-200 hover:text-white"><X size={20}/></button>
+                                <div className="absolute -top-10 -left-10 w-24 h-24 bg-red-700 rounded-full"></div>
+                                <div className="absolute -top-10 -right-10 w-24 h-24 bg-red-700 rounded-full"></div>
+                                <h3 className="text-yellow-200 font-bold text-lg mb-2 tracking-widest">手气炸裂</h3>
+                                <div className="text-white text-sm mb-4">恭喜抽中红包</div>
+                                <div className="relative inline-block mb-4">
+                                    <span className="text-5xl font-black text-yellow-300 drop-shadow-md">
+                                        {selectedCardIndex !== null ? cards[selectedCardIndex].val : '0.00'}
+                                    </span>
+                                    <span className="text-yellow-200 text-xl font-bold ml-1">元</span>
+                                </div>
+                                <button onClick={() => setShowDrawPopup(false)} className="w-full bg-yellow-400 text-red-800 font-bold py-2 rounded-full shadow-lg active:scale-95 transition-transform">
+                                    放入钱包
                                 </button>
                             </div>
                         </div>
