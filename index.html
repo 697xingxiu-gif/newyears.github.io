@@ -3,60 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>新春副业开门红</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- React & ReactDOM -->
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-    <!-- Babel for JSX -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <title>每日一摇上上吉</title>
     
+    <!-- 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 引入 React 和 ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    
+    <!-- 引入 Babel 用于编译 JSX -->
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+    <!-- 引入中文字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&display=swap" rel="stylesheet">
+
     <style>
-        /* Custom Animations & Styles */
         body {
-            background-color: #E60012;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
-        }
-
-        .perspective-1000 { perspective: 1000px; }
-        .transform-style-3d { transform-style: preserve-3d; }
-        .backface-hidden { backface-visibility: hidden; }
-        .rotate-y-180 { transform: rotateY(180deg); }
-        
-        @keyframes shuffle1 { 
-            0% { transform: translateX(0) rotateY(180deg); } 
-            50% { transform: translateX(100%) rotateY(180deg); } 
-            100% { transform: translateX(0) rotateY(180deg); } 
-        }
-        @keyframes shuffle2 { 
-            0% { transform: translateX(0) rotateY(180deg); } 
-            50% { transform: translateX(-100%) rotateY(180deg); } 
-            100% { transform: translateX(0) rotateY(180deg); } 
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f3f4f6;
+            margin: 0;
+            padding: 0;
         }
         
-        .shuffle-move-1 { animation: shuffle1 0.5s ease-in-out infinite; }
-        .shuffle-move-2 { animation: shuffle2 0.5s ease-in-out infinite alternate; }
-
-        @keyframes popup-bounce {
-            0% { transform: scale(0.5); opacity: 0; }
-            60% { transform: scale(1.1); opacity: 1; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        .animate-popup { animation: popup-bounce 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-
-        .bg-pattern {
-            background-color: #E60012;
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239e0000' fill-opacity='0.2'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        /* 竖排文字样式 */
+        .writing-vertical {
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            letter-spacing: 0.1em;
         }
 
-        /* Hide Scrollbar */
-        .no-scrollbar::-webkit-scrollbar {
+        /* 隐藏滚动条 */
+        .scrollbar-hide::-webkit-scrollbar {
             display: none;
         }
-        .no-scrollbar {
+        .scrollbar-hide {
             -ms-overflow-style: none;
             scrollbar-width: none;
+        }
+
+        /* 动画定义 */
+        @keyframes float { 
+            0%, 100% { transform: translateY(0); } 
+            50% { transform: translateY(-10px); } 
+        }
+        @keyframes shake { 
+            0% { transform: rotate(0deg); } 
+            25% { transform: rotate(5deg); } 
+            50% { transform: rotate(0deg); } 
+            75% { transform: rotate(-5deg); } 
+            100% { transform: rotate(0deg); } 
+        }
+        @keyframes stickMove { 
+            0%, 100% { transform: translateY(0); } 
+            50% { transform: translateY(-15px); } 
+        }
+        @keyframes fade-in { 
+            from { opacity: 0; } 
+            to { opacity: 1; } 
+        }
+        @keyframes scale-up { 
+            from { transform: scale(0.9); opacity: 0; } 
+            to { transform: scale(1); opacity: 1; } 
         }
     </style>
 </head>
@@ -64,857 +72,702 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect, useRef } = React;
+        const { useState, useEffect } = React;
 
-        // --- Icons (SVG Components) ---
-        const IconBase = ({ children, size = 24, className = "" }) => (
-            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-                {children}
-            </svg>
-        );
+        // --- 图标组件 (替代 Lucide React) ---
+        const Gift = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/></svg>;
+        const User = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>;
+        const ChevronRight = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>;
+        const Heart = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>;
+        const X = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 18 18"/></svg>;
+        const Star = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>;
+        const Shield = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>;
+        const ThumbsUp = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2h0a3.13 3.13 0 0 1 3 3.88Z"/></svg>;
+        const Medal = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15"/><path d="M11 12 5.12 2.2"/><path d="m13 12 5.88-9.8"/><path d="M8 7h8"/><circle cx="12" cy="17" r="5"/><path d="M12 18v-2h-.5"/></svg>;
+        const MapPin = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>;
 
-        const Trophy = (props) => <IconBase {...props}><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></IconBase>;
-        const Gift = (props) => <IconBase {...props}><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/></IconBase>;
-        const TrendingUp = (props) => <IconBase {...props}><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></IconBase>;
-        const Users = (props) => <IconBase {...props}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></IconBase>;
-        const ChevronRight = (props) => <IconBase {...props}><path d="m9 18 6-6-6-6"/></IconBase>;
-        const Share2 = (props) => <IconBase {...props}><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></IconBase>;
-        const Wallet = (props) => <IconBase {...props}><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></IconBase>;
-        const MapPin = (props) => <IconBase {...props}><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></IconBase>;
-        const Star = (props) => <IconBase {...props}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></IconBase>;
-        const CheckCircle2 = (props) => <IconBase {...props}><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></IconBase>;
-        const X = (props) => <IconBase {...props}><path d="M18 6 6 18"/><path d="m6 6 12 12"/></IconBase>;
-        const Smartphone = (props) => <IconBase {...props}><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></IconBase>;
-        const Shuffle = (props) => <IconBase {...props}><path d="M2 18h1.4c1.3 0 2.5-.6 3.3-1.7l14.2-12.6c.8-1 2-1.7 3.3-1.7H22"/><path d="M2 5h1.6c1.3 0 2.5.7 3.3 1.7l14.2 12.6c.8 1 2 1.7 3.3 1.7H22"/></IconBase>;
-        const Target = (props) => <IconBase {...props}><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></IconBase>;
-        const ThumbsUp = (props) => <IconBase {...props}><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2h0a3.13 3.13 0 0 1 3 3.88Z"/></IconBase>;
-        const Volume2 = (props) => <IconBase {...props}><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></IconBase>;
-        const Download = (props) => <IconBase {...props}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></IconBase>;
-
-        // --- Mock Data ---
-        const LEADERBOARD_DATA = [
-            { id: 1, name: "张师傅", area: "朝阳区", score: 1250, reward: 1888, recommended: 45, avatar: "🦁" },
-            { id: 2, name: "李阿姨", area: "海淀区", score: 1180, reward: 1288, recommended: 40, avatar: "🐯" },
-            { id: 3, name: "王小哥", area: "西城区", score: 1050, reward: 888, recommended: 38, avatar: "🐉" },
-            { id: 4, name: "赵大力", area: "丰台区", score: 980, reward: 688, recommended: 35, avatar: "🐼" }, 
-            { id: 5, name: "孙快手", area: "通州区", score: 920, reward: 688, recommended: 32, avatar: "🦊" }, 
-            { id: 6, name: "周管家", area: "大兴区", score: 890, reward: 688, recommended: 31, avatar: "🐱" }, 
-            { id: 7, name: "吴保洁", area: "昌平区", score: 850, reward: 388, recommended: 28, avatar: "🐰" }, 
+        // --- 数据配置 ---
+        
+        // 社区服务高手推荐数据
+        const RECOMMENDED_WORKERS = [
+          { 
+            id: 101, 
+            name: '刘阿姨', 
+            role: '金牌收纳师', 
+            avatarColor: 'bg-rose-500', 
+            distance: '0.3km',
+            skills: ['全屋收纳', '空间规划'],
+            servedCount: 520,
+            recommendCount: 188,
+            desc: '深耕本社区2年，已帮助150+户家庭解决杂物堆积烦恼。擅长空间扩容，让您的家多出一间房，把时间留给家人，繁琐交给我。'
+          },
+          { 
+            id: 102, 
+            name: '张师傅', 
+            role: '水电急修', 
+            avatarColor: 'bg-blue-600', 
+            distance: '0.6km', 
+            skills: ['电路检修', '卫浴安装'],
+            servedCount: 1350,
+            recommendCount: 456,
+            desc: '小区里的“全能救火员”，累计响应急修需求800+次。无论是深夜爆管还是电路跳闸，5分钟响应，专业高效，守护社区用电用水安全。'
+          },
+          { 
+            id: 103, 
+            name: '小王', 
+            role: '代遛狗/喂猫', 
+            avatarColor: 'bg-yellow-500', 
+            distance: '0.1km', 
+            skills: ['宠物陪护', '绝育接送'],
+            servedCount: 600,
+            recommendCount: 230,
+            desc: '也是一名铲屎官，累计服务社区萌宠400+只。春节/假期上门喂养，专业细心，让您出远门也能安心，毛孩子交给我请放心。'
+          }
         ];
 
-        const MARQUEE_LIST = [
-            "刚刚 李师傅翻出福气红包 8.88 元",
-            "今天 王师傅接到了第10单领到 188.8 元",
-            "刚刚 吴保洁高手榜排名上升 2 名",
-            "喜报 赵大力成功提现 50 元",
-            "刚刚 孙快手完成今日第5单任务",
-            "祝贺 周管家邀请好友获得 30 积分"
+        // 金牌服务者列表数据
+        const GOLD_PROVIDERS = [
+          { id: 1, name: '张阿姨', role: '金牌保洁', avatarColor: 'bg-pink-500', skills: ['深度清洁', '收纳'], rating: '5.0', reviews: 128, blessingsSent: 1205 },
+          { id: 2, name: '王师傅', role: '维修大神', avatarColor: 'bg-blue-600', skills: ['水电急修', '家电清洗'], rating: '4.9', reviews: 342, blessingsSent: 893 },
+          { id: 3, name: '赵小哥', role: '极速跑腿', avatarColor: 'bg-cyan-500', skills: ['同城急送', '代买'], rating: '5.0', reviews: 890, blessingsSent: 2100 },
+          { id: 4, name: '老陈', role: '社区推广', avatarColor: 'bg-green-600', skills: ['兼职达人', '地推'], rating: '4.8', reviews: 56, blessingsSent: 0 },
+          { id: 5, name: '李大厨', role: '上门做饭', avatarColor: 'bg-orange-500', skills: ['川湘菜', '家宴'], rating: '5.0', reviews: 210, blessingsSent: 666 },
         ];
 
-        const App = () => {
-            // --- State Management ---
-            const [points, setPoints] = useState(650);
-            const [rank, setRank] = useState(25);
-            const [prevRank, setPrevRank] = useState(28); // For rank up logic
-            const [showRankPopup, setShowRankPopup] = useState(false);
-            const [scoreGap, setScoreGap] = useState(2); // Initial gap: 2 points
-            
-            // Sign In State
-            const [signInDays, setSignInDays] = useState(2);
-            const [isSignedToday, setIsSignedToday] = useState(false);
-            const [showSignInPopup, setShowSignInPopup] = useState(false);
-            const [signInRewardAmount, setSignInRewardAmount] = useState(0);
-            const [pendingRankUp, setPendingRankUp] = useState(false); // Flag to chain popups
-            
-            // Lucky Draw State
-            const [drawPhase, setDrawPhase] = useState('idle'); 
-            const [selectedCardIndex, setSelectedCardIndex] = useState(null);
-            const [showDrawPopup, setShowDrawPopup] = useState(false); // New: Draw Popup State
-            const [cards, setCards] = useState([
-                { val: 1.88, id: 1 }, { val: 2.88, id: 2 }, { val: 4.88, id: 3 }, { val: 6.88, id: 4 }, { val: 8.88, id: 5 }
-            ]);
-            const [drawChance, setDrawChance] = useState(0);
-            const [likeProgress, setLikeProgress] = useState(3); 
-
-            // Order Challenge
-            const [orderCount, setOrderCount] = useState(2);
-
-            // Marquee State
-            const [marqueeIdx, setMarqueeIdx] = useState(0);
-
-            // Share Poster State
-            const [showSharePoster, setShowSharePoster] = useState(false);
-            
-            // Show Off Poster State (New)
-            const [showShowOffPoster, setShowShowOffPoster] = useState(false);
-
-            // --- Handlers ---
-
-            // Marquee Timer
-            useEffect(() => {
-                const interval = setInterval(() => {
-                setMarqueeIdx(prev => (prev + 1) % MARQUEE_LIST.length);
-                }, 2500); 
-                return () => clearInterval(interval);
-            }, []);
-
-            // 1. Simulate Rank Up (Clicking Points trigger)
-            const handleSimulateRankUp = () => {
-                setShowRankPopup(true);
-                setPoints(prev => prev + 2);
-                setScoreGap(0);
-                setRank(prev => Math.max(1, prev - 1));
-            };
-
-            // 2. Sign In Handler with Chained Popups
-            const handleSignIn = () => {
-                if (!isSignedToday) {
-                setIsSignedToday(true);
-                const newDays = signInDays + 1;
-                setSignInDays(newDays);
-                setPoints(prev => prev + 2);
-                
-                // Simulate closing the gap
-                setScoreGap(0);
-
-                // Check for milestone reward (Simulated: Day 3 gets 0.88, Day 5 gets 1.88)
-                if ([3, 5, 7, 15, 30].includes(newDays)) {
-                    let amount = 0;
-                    if(newDays === 3) amount = 0.88;
-                    else if(newDays === 5) amount = 1.88;
-                    else if(newDays === 7) amount = 2.88; 
-                    else if(newDays === 15) amount = 6.88; 
-                    else amount = 8.88;
-                    
-                    setSignInRewardAmount(amount);
-                    setShowSignInPopup(true);
-                    setPendingRankUp(true); // Mark that rank up should show after this closes
-                } else {
-                    // If no sign in popup, simulate rank up directly
-                    setTimeout(() => {
-                        setShowRankPopup(true);
-                        setRank(prev => Math.max(1, prev - 1));
-                    }, 800);
-                }
-                }
-            };
-
-            // Helper to close Sign In Popup and trigger Rank Up if needed
-            const closeSignInPopup = () => {
-                setShowSignInPopup(false);
-                if (pendingRankUp) {
-                    setPendingRankUp(false);
-                    // Small delay before next popup for better UX
-                    setTimeout(() => {
-                        setShowRankPopup(true);
-                        setRank(prev => Math.max(1, prev - 1)); // Update rank number visually
-                    }, 400);
-                }
-            };
-
-            // 3. Lucky Draw Logic
-            const startDraw = () => {
-                setDrawPhase('preparing');
-                setTimeout(() => {
-                    setDrawPhase('shuffling');
-                    setTimeout(() => {
-                        const shuffled = [...cards].sort(() => Math.random() - 0.5);
-                        setCards(shuffled);
-                        setDrawPhase('picking');
-                    }, 2000);
-                }, 600);
-            };
-
-            const pickCard = (index) => {
-                if (drawPhase !== 'picking') return;
-                setSelectedCardIndex(index);
-                setDrawPhase('result');
-                
-                // Show popup after card flip animation
-                setTimeout(() => {
-                    setShowDrawPopup(true);
-                }, 800);
-            };
-
-            const resetDraw = () => {
-                setDrawPhase('idle');
-                setSelectedCardIndex(null);
-                setShowDrawPopup(false);
-                setCards([ { val: 1.88, id: 1 }, { val: 2.88, id: 2 }, { val: 4.88, id: 3 }, { val: 6.88, id: 4 }, { val: 8.88, id: 5 } ]);
-            };
-
-            // 4. Handle Share Click
-            const handleShareClick = () => {
-                setShowSharePoster(true);
-            };
-
-            // 5. Handle Show Off Click (New)
-            const handleShowOffClick = () => {
-                setShowRankPopup(false);
-                setShowShowOffPoster(true);
-            };
-
-            return (
-                <div className="min-h-screen bg-pattern font-sans text-gray-800 pb-20 relative overflow-x-hidden w-full max-w-md mx-auto shadow-2xl">
-                
-                {/* --- 1. Header KV --- */}
-                <header className="relative h-64 overflow-hidden text-center text-white pt-10">
-                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-red-800 to-transparent z-0"></div>
-                    <div className="absolute top-0 left-4 w-12 h-16 bg-red-700 rounded-b-xl border-t-4 border-yellow-500 shadow-lg animate-pulse z-10 flex items-center justify-center">
-                    <span className="text-yellow-400 font-serif text-xl border-2 border-yellow-600 rounded-full p-1">福</span>
-                    <div className="absolute -bottom-4 left-1/2 w-1 h-4 bg-yellow-500 -translate-x-1/2"></div>
-                    </div>
-                    <div className="absolute top-0 right-4 w-12 h-16 bg-red-700 rounded-b-xl border-t-4 border-yellow-500 shadow-lg animate-pulse z-10 flex items-center justify-center" style={{animationDelay: '1s'}}>
-                    <span className="text-yellow-400 font-serif text-xl border-2 border-yellow-600 rounded-full p-1">春</span>
-                    <div className="absolute -bottom-4 left-1/2 w-1 h-4 bg-yellow-500 -translate-x-1/2"></div>
-                    </div>
-                    <div className="relative z-20 mt-4">
-                    <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-b from-yellow-300 to-yellow-600 drop-shadow-md stroke-red-800 tracking-wider">
-                        搞副业<br/>拿红包<br/>过好年
-                    </h1>
-                    <div className="inline-block mt-3 bg-red-900 px-4 py-1 rounded-full border border-yellow-500 shadow-lg">
-                        <span className="text-sm font-bold text-yellow-100">勇敢踏一步，副业有出路</span>
-                    </div>
-                    </div>
-                </header>
-
-                {/* --- 2. Dashboard --- */}
-                <section className="relative z-30 px-4 -mt-6">
-                    <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-red-100">
-                        <div 
-                            className="bg-gradient-to-r from-orange-50 via-yellow-50 to-white px-4 py-3 flex items-center justify-between border-b border-orange-100 cursor-pointer active:bg-orange-100 transition-colors"
-                            onClick={handleSimulateRankUp}
-                        >
-                            <div className="flex items-center gap-2">
-                                <div className="w-5 h-5 rounded-full bg-red-100 border border-red-200 flex items-center justify-center text-red-600 shadow-sm">
-                                    <Target size={12} />
-                                </div>
-                                <span className="text-xs text-red-800 font-medium">
-                                    加油！距离上一名【高手】还差 <span className="text-base font-black text-red-600 mx-0.5">{scoreGap}</span> 积分
-                                </span>
-                            </div>
-                            <div className="w-10 h-1.5 bg-gray-200 rounded-full overflow-hidden flex-shrink-0">
-                                <div className="h-full bg-red-500 rounded-full animate-pulse" style={{width: scoreGap === 0 ? '100%' : '70%'}}></div>
-                            </div>
-                        </div>
-
-                        <div className="p-4 grid grid-cols-4 gap-2 text-center relative z-10">
-                            <div className="flex flex-col items-center justify-center cursor-pointer active:scale-95 transition" onClick={handleSimulateRankUp}>
-                                <span className="text-red-600 font-black text-xl">{points}</span>
-                                <span className="text-gray-500 text-xs mt-1">当前积分</span>
-                            </div>
-                            <div className="flex flex-col items-center justify-center">
-                                <span className="text-red-600 font-bold text-lg">12</span>
-                                <span className="text-gray-500 text-xs mt-1">被推荐</span>
-                            </div>
-                            <div className="flex flex-col items-center justify-center">
-                                <span className="text-red-600 font-bold text-lg">¥128</span>
-                                <span className="text-gray-500 text-xs mt-1">累计现金</span>
-                            </div>
-                            <div className="flex flex-col items-center justify-center cursor-pointer" onClick={() => document.getElementById('leaderboard').scrollIntoView({behavior: 'smooth'})}>
-                                <div className="text-red-600 font-bold text-lg">No.{rank}</div>
-                                <span className="text-gray-500 text-xs mt-1">当前排名</span>
-                            </div>
-                        </div>
-                        
-                        {/* Marquee Section */}
-                        <div className="h-px w-full bg-red-100"></div>
-                        <div className="px-4 py-2.5 bg-red-50 flex items-center gap-2">
-                            <div className="bg-red-200 p-1 rounded-full shadow-sm"><Volume2 size={12} className="text-red-700"/></div>
-                            <div className="flex-1 h-5 relative overflow-hidden">
-                                <div 
-                                    className="absolute top-0 left-0 w-full transition-transform duration-500 ease-in-out flex flex-col items-start"
-                                    style={{ transform: `translateY(-${marqueeIdx * 20}px)` }}
-                                >
-                                    {MARQUEE_LIST.map((text, i) => (
-                                        <div key={i} className="h-5 flex items-center text-xs text-red-800 font-medium whitespace-nowrap">
-                                            {text}
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                {/* --- 3. Gameplay Modules --- */}
-                <div className="px-4 mt-6 space-y-6">
-
-                    {/* Module 1: Sign In */}
-                    <div className="bg-[#FFF8E7] rounded-xl overflow-hidden shadow-md border border-red-200">
-                        <div className="bg-red-800 text-yellow-100 px-4 py-2 flex justify-between items-center">
-                            <div>
-                                <h3 className="font-bold text-lg">【新春开工签】</h3>
-                                <p className="text-xs text-yellow-300 opacity-90">好运天天添，连签拿大奖</p>
-                            </div>
-                            <div className="bg-yellow-500 text-red-900 text-xs font-bold px-2 py-1 rounded">已连续{signInDays}天</div>
-                        </div>
-                        <div className="p-4">
-                            <div className="flex justify-between items-start mb-4 mt-2">
-                                {[1, 2, 3, 4, 5, 6, 7].map((day) => {
-                                    const isPast = day <= signInDays;
-                                    const isMilestone = [3, 5, 7, 15, 30].includes(day);
-                                    const milestoneAmounts = {3: 0.88, 5: 1.88, 7: 2.88, 15: 6.88, 30: 8.88};
-                                    
-                                    return (
-                                        <div key={day} className={`flex flex-col items-center w-10 ${isPast ? 'opacity-100' : 'opacity-60'}`}>
-                                            <div className={`w-9 h-9 rounded-full flex items-center justify-center border-2 mb-1 relative
-                                                ${isPast 
-                                                    ? 'bg-yellow-100 border-yellow-500' 
-                                                    : 'bg-white border-red-100'
-                                                }
-                                            `}>
-                                                {isMilestone ? (
-                                                    <div className="relative">
-                                                        <Gift size={18} className="text-red-600" />
-                                                    </div>
-                                                ) : (
-                                                    <div className="flex flex-col items-center justify-center leading-none">
-                                                        <div className="w-2.5 h-2.5 rounded-full bg-yellow-400 border border-yellow-600 mb-0.5"></div>
-                                                        <span className="text-[9px] font-bold text-red-800">+2</span>
-                                                    </div>
-                                                )}
-                                                
-                                                {isPast && (
-                                                    <div className="absolute -right-1 -bottom-1 bg-green-500 rounded-full p-0.5 border border-white">
-                                                        <CheckCircle2 size={8} className="text-white"/>
-                                                    </div>
-                                                )}
-                                            </div>
-                                            <span className="text-xs text-gray-600 mb-0.5 font-medium">第{day}天</span>
-                                            {isMilestone ? (
-                                                <span className="text-[9px] font-bold text-red-600 bg-red-50 px-1 rounded border border-red-100 leading-tight">¥{milestoneAmounts[day]}</span>
-                                            ) : (
-                                                <span className="h-3"></span>
-                                            )}
-                                        </div>
-                                    )
-                                })}
-                            </div>
-
-                            <button 
-                                onClick={handleSignIn}
-                                disabled={isSignedToday}
-                                className={`w-full py-3 rounded-full font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2
-                                    ${isSignedToday 
-                                        ? 'bg-gray-200 text-gray-400 cursor-not-allowed shadow-none' 
-                                        : 'bg-gradient-to-r from-red-600 to-red-500 text-white active:scale-95 border-2 border-red-400'
-                                    }`}
-                            >
-                                {isSignedToday ? (
-                                    <><CheckCircle2 size={16}/> 今日积分已+2</>
-                                ) : (
-                                    <><Smartphone size={16}/> 点亮名片领积分</>
-                                )}
-                            </button>
-                            
-                            <div className="text-center mt-3 text-xs text-red-800 bg-yellow-50 py-1.5 rounded-lg border border-yellow-100">
-                                {(() => {
-                                    const milestones = [3, 5, 7, 15, 30];
-                                    const nextDay = milestones.find(d => d > signInDays) || 30;
-                                    const amounts = {3: 0.88, 5: 1.88, 7: 2.88, 15: 6.88, 30: 8.88};
-                                    const gap = nextDay - signInDays;
-                                    
-                                    return (
-                                        <span>
-                                            已连续签到 <strong>{signInDays}</strong> 天，再签 <strong>{gap}</strong> 天必得 <strong>{amounts[nextDay]}</strong> 元红包！
-                                        </span>
-                                    );
-                                })()}
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Module 2: Lucky Draw */}
-                    <div className="bg-[#FFF8E7] rounded-xl shadow-md border border-red-200 relative">
-                        <div className="bg-red-800 text-yellow-100 px-4 py-2 flex justify-between items-center rounded-t-xl">
-                            <div>
-                                <h3 className="font-bold text-lg">【福气翻翻乐】</h3>
-                                <p className="text-xs text-yellow-300 opacity-90">惊喜藏不住，手气博头彩</p>
-                            </div>
-                            <div className="bg-yellow-500 text-red-900 text-xs font-bold px-2 py-1 rounded">翻手气剩余1次</div>
-                        </div>
-                        
-                        <div className="p-4 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] rounded-b-xl">
-                            <div className="bg-red-100 text-red-600 text-xs px-2 py-1 rounded mb-3 text-center truncate">
-                                本期奖池：1.88元 | 2.88元 | 4.88元 | 6.88元 | 8.88元
-                            </div>
-
-                            <div className="h-32 flex justify-between items-center relative perspective-1000 mb-4">
-                                {cards.map((card, idx) => {
-                                    const isBackVisible = drawPhase === 'preparing' || drawPhase === 'shuffling' || drawPhase === 'picking';
-                                    return (
-                                        <div 
-                                            key={card.id}
-                                            onClick={() => pickCard(idx)}
-                                            className={`
-                                                w-[18%] h-24 absolute transition-all duration-700 transform-style-3d cursor-pointer
-                                                ${drawPhase === 'shuffling' && idx % 2 === 0 ? 'shuffle-move-1' : ''}
-                                                ${drawPhase === 'shuffling' && idx % 2 !== 0 ? 'shuffle-move-2' : ''}
-                                            `}
-                                            style={{ 
-                                                left: `${idx * 20 + 2}%`,
-                                                transform: isBackVisible ? 'rotateY(180deg)' : 'rotateY(0deg)'
-                                            }}
-                                        >
-                                            <div className="absolute w-full h-full bg-gradient-to-b from-yellow-100 to-yellow-300 border-2 border-yellow-500 rounded-lg flex flex-col items-center justify-center backface-hidden shadow-lg">
-                                                <span className="text-xs text-red-800 font-bold mb-1">红包</span>
-                                                <span className={`font-black text-red-600 ${drawPhase === 'result' && selectedCardIndex !== idx ? 'opacity-50' : 'scale-110'}`}>
-                                                    {card.val}
-                                                </span>
-                                            </div>
-                                            <div className="absolute w-full h-full bg-gradient-to-br from-red-600 to-red-800 border-2 border-yellow-500 rounded-lg flex items-center justify-center backface-hidden rotate-y-180 shadow-lg">
-                                                <div className="w-8 h-8 border-2 border-yellow-400 rounded-full flex items-center justify-center text-yellow-400 font-serif text-sm">福</div>
-                                            </div>
-                                        </div>
-                                    )
-                                })}
-                            </div>
-
-                            {/* Status Text (Only show if shuffling/picking) */}
-                            {(drawPhase === 'shuffling' || drawPhase === 'picking' || drawPhase === 'preparing') && (
-                                <div className="text-center mb-2">
-                                    <div className="text-red-800 font-bold animate-pulse">
-                                        {drawPhase === 'picking' ? '请凭直觉选一张！' : '洗牌中...'}
-                                    </div>
-                                </div>
-                            )}
-
-                            <div className="mt-4 pt-2 mb-8">
-                                <div className="flex justify-between items-center mb-2">
-                                    <span className="text-xs text-gray-600">今日福气进度</span>
-                                    <span className="text-xs font-bold text-red-600">推荐数{likeProgress}/5</span>
-                                </div>
-                                
-                                <div className="relative w-full h-8 mb-2">
-                                    <div className="absolute top-1/2 left-0 w-full h-2 bg-red-100 rounded-full -translate-y-1/2"></div>
-                                    <div className="absolute top-1/2 left-0 h-2 bg-red-600 rounded-full -translate-y-1/2 transition-all duration-500" style={{width: `${(likeProgress/5)*100}%`}}></div>
-                                    
-                                    <div className="absolute top-1/2 left-[40%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
-                                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center text-[10px] font-bold z-10 ${likeProgress >= 2 ? 'bg-red-600 border-yellow-200 text-yellow-100 shadow-sm' : 'bg-white border-red-200 text-gray-400'}`}>2</div>
-                                        <div className="absolute -bottom-8 bg-yellow-100 border border-yellow-400 text-red-600 text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm whitespace-nowrap z-20">
-                                            抽1次
-                                            <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-yellow-100 border-t border-l border-yellow-400 transform rotate-45"></div>
-                                        </div>
-                                    </div>
-
-                                    <div className="absolute top-1/2 left-[100%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
-                                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center text-[10px] font-bold z-10 ${likeProgress >= 5 ? 'bg-red-600 border-yellow-200 text-yellow-100 shadow-sm' : 'bg-white border-red-200 text-gray-400'}`}>5</div>
-                                        <div className="absolute -bottom-8 bg-yellow-100 border border-yellow-400 text-red-600 text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm whitespace-nowrap z-20">
-                                            再抽1次
-                                            <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-yellow-100 border-t border-l border-yellow-400 transform rotate-45"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="flex gap-3">
-                                {drawPhase === 'idle' ? (
-                                    <button onClick={startDraw} className="flex-1 bg-gradient-to-b from-yellow-400 to-yellow-600 text-red-900 py-2.5 rounded-xl font-bold shadow-lg active:scale-95 flex items-center justify-center gap-1">
-                                        <Shuffle size={16}/> 洗牌抽奖
-                                    </button>
-                                ) : drawPhase === 'result' ? (
-                                    <button onClick={resetDraw} className="flex-1 bg-red-600 text-white py-2.5 rounded-xl font-bold shadow-lg active:scale-95 flex items-center justify-center gap-1">
-                                        再来一次
-                                    </button>
-                                ) : (
-                                    <button disabled className="flex-1 bg-gray-300 text-gray-500 py-2.5 rounded-xl font-bold shadow-none flex items-center justify-center gap-1 cursor-not-allowed">
-                                        <Shuffle size={16} className="animate-spin"/> 游戏中...
-                                    </button>
-                                )}
-                                <button onClick={handleShareClick} className="flex-1 bg-white border border-red-300 text-red-600 py-2.5 rounded-xl font-bold flex items-center justify-center gap-1 shadow-sm active:bg-red-50">
-                                    <Share2 size={16}/> 分享拿福气
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Module 3: Order Challenge */}
-                    <div className="bg-[#FFF8E7] rounded-xl overflow-hidden shadow-md border border-red-200">
-                        <div className="bg-red-800 text-yellow-100 px-4 py-2 flex justify-between items-center">
-                            <div>
-                                <h3 className="font-bold text-lg">【接单财运亨】</h3>
-                                <p className="text-xs text-yellow-300 opacity-90">接单聚宝盆，多劳赚现金</p>
-                            </div>
-                            <div className="bg-yellow-500 text-red-900 text-xs font-bold px-2 py-1 rounded">订单进度{orderCount}单</div>
-                        </div>
-                        <div className="p-4">
-                            <div className="flex items-end justify-between px-2 mb-8 relative">
-                                <div className="absolute w-[80%] h-1 bg-red-100 top-5 left-[10%] -z-0">
-                                    <div className="h-full bg-red-500 transition-all rounded-full" style={{width: `${(orderCount/10)*100}%`}}></div>
-                                </div>
-                                {[
-                                    {step: 1, val: 18.8, done: orderCount >= 1},
-                                    {step: 3, val: 28.8, done: orderCount >= 3},
-                                    {step: 5, val: 68.8, done: orderCount >= 5},
-                                    {step: 10, val: 188.8, done: orderCount >= 10},
-                                ].map((item, idx) => (
-                                    <div key={idx} className="flex flex-col items-center gap-2 w-1/4 relative z-10">
-                                        <div className={`relative px-2 py-1 rounded-lg border-2 shadow-sm transition-transform duration-300 ${item.done ? 'bg-red-600 border-red-600 text-yellow-100 scale-110 -translate-y-1' : 'bg-white border-red-200 text-red-400'}`}>
-                                            <span className="text-[10px] font-bold mr-0.5">¥</span>
-                                            <span className="text-sm font-black tracking-tighter">{item.val}</span>
-                                            <div className={`absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 rotate-45 border-r-2 border-b-2 ${item.done ? 'bg-red-600 border-red-600' : 'bg-white border-red-200'}`}></div>
-                                        </div>
-                                        <div className={`w-3 h-3 rounded-full border-2 ${item.done ? 'bg-yellow-400 border-red-500 ring-2 ring-red-200' : 'bg-white border-red-200'}`}></div>
-                                        <span className={`text-xs font-bold mt-1 ${item.done ? 'text-red-700' : 'text-gray-400'}`}>完成第{item.step}单</span>
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="bg-red-50 p-2 rounded-lg mb-4">
-                                <h4 className="text-xs font-bold text-red-800 mb-1">💰 积分规则：</h4>
-                                <div className="flex flex-wrap gap-1">
-                                    <span className="text-[10px] bg-white border border-red-100 px-1 rounded text-gray-600">20-49元: +5分</span>
-                                    <span className="text-[10px] bg-white border border-red-100 px-1 rounded text-gray-600">50-99元: +10分</span>
-                                    <span className="text-[10px] bg-white border border-red-100 px-1 rounded text-gray-600">100-199元: +15分</span>
-                                    <span className="text-[10px] bg-white border border-red-100 px-1 rounded text-gray-600">200-299元: +20分</span>
-                                    <span className="text-[10px] bg-white border border-red-100 px-1 rounded text-gray-600">300元+: +30分</span>
-                                </div>
-                            </div>
-                            <button onClick={handleShareClick} className="w-full bg-red-600 text-white font-bold py-3 rounded-xl shadow-lg flex items-center justify-center gap-2 active:bg-red-700">
-                                去接单赚钱 <ChevronRight size={16}/>
-                            </button>
-                        </div>
-                    </div>
-
-                </div>
-
-                {/* --- 4. Leaderboard --- */}
-                <section id="leaderboard" className="mt-8 px-4 pb-12">
-                    <div className="text-center mb-6">
-                        <h2 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-b from-yellow-300 to-yellow-500 drop-shadow-sm stroke-red-800">【马上迎薪·社区服务高手榜】</h2>
-                        <p className="text-yellow-100 text-xs mt-1">服务之星 榜上有名 现金大奖等你拿</p>
-                    </div>
-                    <div className="flex justify-center items-end mb-6 gap-2">
-                        {/* 2nd Place */}
-                        <div className="flex flex-col items-center relative w-1/3">
-                            <div className="w-12 h-12 bg-gray-200 rounded-full border-2 border-gray-400 flex items-center justify-center text-xl shadow-lg relative z-10">
-                                {LEADERBOARD_DATA[1].avatar}
-                                <div className="absolute -bottom-2 bg-gray-500 text-white text-[10px] px-1.5 rounded-full border border-gray-300">No.2</div>
-                            </div>
-                            <div className="text-white text-xs mt-1 font-bold truncate w-full text-center">{LEADERBOARD_DATA[1].name}</div>
-                            <div className="bg-gradient-to-b from-gray-300 to-gray-400 w-full rounded-t-lg mt-2 pt-2 pb-1 flex flex-col items-center justify-end border-t-4 border-gray-200 h-28 relative">
-                                {/* Data Card Overlay */}
-                                <div className="bg-white/90 rounded-lg p-1 mb-1 w-[90%] flex flex-col items-center justify-center shadow-sm">
-                                    <span className="text-[10px] font-bold text-gray-800">{LEADERBOARD_DATA[1].score}分</span>
-                                    <span className="text-[9px] text-gray-600 flex items-center gap-0.5"><ThumbsUp size={8}/> {LEADERBOARD_DATA[1].recommended}</span>
-                                </div>
-                                <span className="font-black text-gray-800 text-sm mt-1">¥{LEADERBOARD_DATA[1].reward}</span>
-                            </div>
-                        </div>
-                        {/* 1st Place */}
-                        <div className="flex flex-col items-center z-10 relative w-1/3 -mx-2">
-                            <div className="text-yellow-400 mb-1"><Trophy size={24} /></div>
-                            <div className="w-16 h-16 bg-yellow-100 rounded-full border-4 border-yellow-500 flex items-center justify-center text-2xl shadow-lg relative z-10">
-                                {LEADERBOARD_DATA[0].avatar}
-                                <div className="absolute -top-4 right-0 transform rotate-12">👑</div>
-                                <div className="absolute -bottom-2 bg-yellow-600 text-white text-[10px] px-2 rounded-full border border-yellow-300">No.1</div>
-                            </div>
-                            <div className="text-white text-sm mt-1 font-bold truncate w-full text-center">{LEADERBOARD_DATA[0].name}</div>
-                            <div className="bg-gradient-to-b from-yellow-400 to-yellow-600 w-full rounded-t-lg mt-2 pt-2 pb-1 flex flex-col items-center justify-end border-t-4 border-yellow-200 shadow-xl h-36 relative">
-                                {/* Data Card Overlay */}
-                                <div className="bg-white/90 rounded-lg p-1.5 mb-1 w-[90%] flex flex-col items-center justify-center shadow-sm">
-                                    <span className="text-xs font-black text-red-600">{LEADERBOARD_DATA[0].score}分</span>
-                                    <span className="text-[10px] text-gray-600 flex items-center gap-0.5"><ThumbsUp size={10}/> {LEADERBOARD_DATA[0].recommended}</span>
-                                </div>
-                                <span className="font-black text-red-900 text-lg mt-1">¥{LEADERBOARD_DATA[0].reward}</span>
-                            </div>
-                        </div>
-                        {/* 3rd Place */}
-                        <div className="flex flex-col items-center relative w-1/3">
-                            <div className="w-12 h-12 bg-orange-100 rounded-full border-2 border-orange-400 flex items-center justify-center text-xl shadow-lg relative z-10">
-                                {LEADERBOARD_DATA[2].avatar}
-                                <div className="absolute -bottom-2 bg-orange-600 text-white text-[10px] px-1.5 rounded-full border border-orange-300">No.3</div>
-                            </div>
-                            <div className="text-white text-xs mt-1 font-bold truncate w-full text-center">{LEADERBOARD_DATA[2].name}</div>
-                            <div className="bg-gradient-to-b from-orange-300 to-orange-500 w-full rounded-t-lg mt-2 pt-2 pb-1 flex flex-col items-center justify-end border-t-4 border-orange-200 h-24 relative">
-                                {/* Data Card Overlay */}
-                                <div className="bg-white/90 rounded-lg p-1 mb-1 w-[90%] flex flex-col items-center justify-center shadow-sm">
-                                    <span className="text-[10px] font-bold text-orange-800">{LEADERBOARD_DATA[2].score}分</span>
-                                    <span className="text-[9px] text-gray-600 flex items-center gap-0.5"><ThumbsUp size={8}/> {LEADERBOARD_DATA[2].recommended}</span>
-                                </div>
-                                <span className="font-bold text-orange-900 text-sm mt-1">¥{LEADERBOARD_DATA[2].reward}</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="bg-white rounded-xl overflow-hidden shadow-lg">
-                        <div className="bg-red-50 px-4 py-2 text-xs text-red-500 flex items-center gap-1 border-b border-red-100">
-                            <TrendingUp size={12}/> ⚠️ 冲榜必读：前10名需积分&gt;800，被推荐数&gt;30
-                        </div>
-                        {LEADERBOARD_DATA.slice(3).map((user, idx) => (
-                            <div key={user.id} className="flex items-center justify-between p-3 border-b border-gray-100 last:border-0">
-                                <div className="flex items-center gap-3">
-                                    <span className="text-gray-400 font-bold w-4 text-center">{user.id}</span>
-                                    <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">{user.avatar}</div>
-                                    <div>
-                                        <div className="text-sm font-bold text-gray-800">{user.name}</div>
-                                        <div className="text-[10px] text-gray-500 flex items-center gap-1"><MapPin size={10}/> {user.area}</div>
-                                    </div>
-                                </div>
-                                <div className="flex gap-4 items-center">
-                                    <div className="text-center">
-                                        <div className="text-xs font-bold text-gray-700 flex items-center gap-0.5 justify-end">
-                                            <ThumbsUp size={10} className="text-yellow-500"/> {user.recommended}
-                                        </div>
-                                        <div className="text-[9px] text-gray-400">推荐</div>
-                                    </div>
-                                    <div className="text-right">
-                                        <div className="text-red-600 font-bold text-sm">{user.score}分</div>
-                                        <div className="text-[10px] text-gray-400">待领¥{user.reward}</div>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                        <div className="p-3 text-center text-xs text-gray-400">查看前100名 &gt;</div>
-                    </div>
-                </section>
-
-                {/* --- 5. Sticky Footer --- */}
-                <div className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] p-2 px-4 flex items-center justify-between z-50 max-w-md mx-auto right-0">
-                    <div className="flex items-center gap-2">
-                        <div className="w-10 h-10 rounded-full bg-gray-100 border-2 border-yellow-400 overflow-hidden shadow-sm">
-                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="avatar" className="w-full h-full" />
-                        </div>
-                        <div className="flex flex-col">
-                            <span className="text-[10px] text-gray-500">我的排名</span>
-                            <span className="text-sm font-bold text-red-600">No.{rank}</span>
-                        </div>
-                    </div>
-                    <div className="flex-1 ml-4">
-                        <button onClick={handleShareClick} className="w-full bg-red-600 text-white px-5 py-2 rounded-lg text-sm font-bold shadow-md animate-pulse flex items-center justify-center gap-2">
-                            <Share2 size={16}/> 分享赚分
-                        </button>
-                    </div>
-                </div>
-
-                {/* --- Share Poster Modal --- */}
-                {showSharePoster && (
-                    <div className="fixed inset-0 z-[80] flex flex-col items-center justify-center bg-black/80 p-6" onClick={() => setShowSharePoster(false)}>
-                        <div className="bg-white w-full max-w-sm rounded-2xl overflow-hidden shadow-2xl relative" onClick={e => e.stopPropagation()}>
-                            {/* Header / Red Bg */}
-                            <div className="bg-gradient-to-b from-red-600 to-red-700 p-6 pt-8 text-center text-white relative overflow-hidden">
-                                {/* Decorative Circles */}
-                                <div className="absolute top-0 left-0 w-20 h-20 bg-yellow-400/20 rounded-full -translate-x-1/2 -translate-y-1/2"></div>
-                                <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-400/10 rounded-full translate-x-1/3 -translate-y-1/3"></div>
-                                
-                                <div className="flex flex-col items-center relative z-10">
-                                    <div className="w-16 h-16 rounded-full border-2 border-yellow-300 p-0.5 bg-white mb-2 shadow-md">
-                                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="avatar" className="w-full h-full rounded-full" />
-                                    </div>
-                                    <h3 className="font-bold text-xl">张师傅</h3>
-                                    <p className="text-xs opacity-90 flex items-center gap-1 mt-1 bg-black/20 px-2 py-0.5 rounded-full">
-                                        <MapPin size={10} /> 朝阳区 · 阳光社区
-                                    </p>
-                                    
-                                    <div className="mt-4 text-sm font-medium text-yellow-100 italic leading-relaxed px-4">
-                                        “金马迎春开工吉，副业接单勤赚钱。<br/>您的支持是我最大的动力，<br/>祝您新的一年万事如意！”
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Service Card */}
-                            <div className="p-5 bg-white">
-                                <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 flex items-center justify-between mb-6 shadow-sm">
-                                    <div>
-                                        <div className="text-gray-500 text-xs mb-1">推荐服务</div>
-                                        <div className="font-bold text-gray-800 text-lg">专业家庭保洁</div>
-                                    </div>
-                                    <div className="text-right">
-                                        <div className="text-red-600 font-black text-xl">
-                                            <span className="text-xs font-normal text-gray-500 mr-0.5">新春特惠</span>
-                                            ¥128<span className="text-xs">起</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* QR Code Area */}
-                                <div className="flex items-center justify-center gap-4">
-                                    <div className="bg-white p-2 border-2 border-dashed border-gray-300 rounded-lg">
-                                        {/* Simulated QR Code (Placeholder) */}
-                                        <div className="w-20 h-20 bg-gray-900 flex items-center justify-center text-white text-[8px] font-mono text-center leading-tight">
-                                            [二维码]<br/>模拟区域
-                                        </div>
-                                    </div>
-                                    <div className="text-left">
-                                        <p className="font-bold text-gray-800 text-sm">长按识别二维码</p>
-                                        <p className="text-xs text-gray-500 mt-0.5">为我点赞 助力开工</p>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            {/* Save Button */}
-                            <div className="bg-gray-50 p-3 text-center border-t border-gray-100">
-                                <button className="text-red-600 font-bold text-sm flex items-center justify-center gap-1 mx-auto">
-                                    <Download size={14}/> 保存海报分享
-                                </button>
-                            </div>
-                        </div>
-                        <button onClick={() => setShowSharePoster(false)} className="mt-6 bg-white/20 p-2 rounded-full border border-white/50 text-white backdrop-blur-sm hover:bg-white/30 transition-colors">
-                            <X size={24}/>
-                        </button>
-                    </div>
-                )}
-
-                {/* --- Show Off Poster Modal (New) --- */}
-                {showShowOffPoster && (
-                    <div className="fixed inset-0 z-[80] flex flex-col items-center justify-center bg-black/80 p-6" onClick={() => setShowShowOffPoster(false)}>
-                        <div className="bg-white w-full max-w-sm rounded-2xl overflow-hidden shadow-2xl relative" onClick={e => e.stopPropagation()}>
-                            {/* Header / Red Bg */}
-                            <div className="bg-gradient-to-b from-red-600 to-red-800 p-6 pt-10 text-center text-white relative overflow-hidden">
-                                {/* Decorative Rays */}
-                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[200%] bg-[radial-gradient(circle,rgba(255,255,0,0.2)_0%,transparent_60%)] animate-pulse"></div>
-                                <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-400/10 rounded-full translate-x-1/3 -translate-y-1/3"></div>
-                                
-                                <div className="flex flex-col items-center relative z-10">
-                                    <div className="w-20 h-20 rounded-full border-4 border-yellow-400 p-0.5 bg-white mb-3 shadow-lg">
-                                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="avatar" className="w-full h-full rounded-full" />
-                                    </div>
-                                    <h3 className="font-bold text-2xl mb-1">张师傅</h3>
-                                    <p className="text-sm opacity-90">我在 <span className="font-bold text-yellow-300">厦门集美区</span> 做服务高手</p>
-                                </div>
-                            </div>
-
-                            {/* Main Content */}
-                            <div className="p-6 bg-white text-center relative">
-                                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-white rotate-45"></div>
-                                
-                                <p className="text-gray-500 text-xs mb-1">现在是上上吉邻工季</p>
-                                <div className="text-red-600 font-black text-4xl mb-4 drop-shadow-sm">第15名</div>
-                                
-                                <div className="bg-red-50 rounded-xl p-4 mb-6 border border-red-100">
-                                    <p className="text-gray-800 font-bold mb-1">我想挑战拿</p>
-                                    <div className="text-3xl font-black text-red-600 mb-1">1888<span className="text-sm font-bold">元</span> <span className="text-lg text-gray-800">大奖</span></div>
-                                </div>
-
-                                <div className="text-lg font-bold text-gray-800 mb-6 flex items-center justify-center gap-2">
-                                    <span className="text-2xl">💪</span> 我的副业就差你的支持
-                                </div>
-
-                                {/* QR Code Area */}
-                                <div className="flex flex-col items-center justify-center gap-2">
-                                    <div className="bg-white p-2 border-2 border-dashed border-gray-300 rounded-lg">
-                                        <div className="w-24 h-24 bg-gray-900 flex items-center justify-center text-white text-[10px] font-mono text-center leading-tight">
-                                            [二维码]<br/>助力支持
-                                        </div>
-                                    </div>
-                                    <p className="text-xs text-gray-400">长按识别二维码为我助力</p>
-                                </div>
-                            </div>
-                            
-                            {/* Save Button */}
-                            <div className="bg-gray-50 p-3 text-center border-t border-gray-100">
-                                <button className="text-red-600 font-bold text-sm flex items-center justify-center gap-1 mx-auto">
-                                    <Download size={14}/> 保存海报分享
-                                </button>
-                            </div>
-                        </div>
-                        <button onClick={() => setShowShowOffPoster(false)} className="mt-6 bg-white/20 p-2 rounded-full border border-white/50 text-white backdrop-blur-sm hover:bg-white/30 transition-colors">
-                            <X size={24}/>
-                        </button>
-                    </div>
-                )}
-
-                {/* --- Sign In Reward Popup --- */}
-                {showSignInPopup && (
-                    <div className="fixed inset-0 z-[70] flex flex-col items-center justify-center bg-black/80 px-4">
-                        <div className="relative animate-popup w-full max-w-xs flex flex-col items-center">
-                            {/* Rays */}
-                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-radial from-yellow-300 to-transparent opacity-50 blur-xl animate-pulse"></div>
-                            
-                            <div className="bg-red-600 w-full rounded-xl border-4 border-yellow-400 shadow-2xl relative overflow-hidden text-center pt-8 pb-12 px-4 z-10">
-                                {/* Removed top-right close button */}
-                                <div className="absolute -top-10 -left-10 w-24 h-24 bg-red-700 rounded-full"></div>
-                                <div className="absolute -top-10 -right-10 w-24 h-24 bg-red-700 rounded-full"></div>
-                                <h3 className="text-yellow-200 font-bold text-lg mb-2 tracking-widest">开工大吉</h3>
-                                <div className="text-white text-sm mb-4">连续签到奖励</div>
-                                <div className="relative inline-block mb-4">
-                                    <span className="text-5xl font-black text-yellow-300 drop-shadow-md">{signInRewardAmount}</span>
-                                    <span className="text-yellow-200 text-xl font-bold ml-1">元</span>
-                                </div>
-                                <button onClick={closeSignInPopup} className="w-full bg-yellow-400 text-red-800 font-bold py-2 rounded-full shadow-lg active:scale-95 transition-transform">
-                                    开心收下
-                                </button>
-                            </div>
-                            <button onClick={closeSignInPopup} className="mt-6 bg-white/20 p-2 rounded-full border border-white/50 text-white backdrop-blur-sm hover:bg-white/30 transition-colors z-10">
-                                <X size={24}/>
-                            </button>
-                        </div>
-                    </div>
-                )}
-
-                {/* --- Draw Result Popup (New) --- */}
-                {showDrawPopup && (
-                    <div className="fixed inset-0 z-[70] flex flex-col items-center justify-center bg-black/80 px-4">
-                        <div className="relative animate-popup w-full max-w-xs flex flex-col items-center">
-                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-radial from-yellow-300 to-transparent opacity-50 blur-xl animate-pulse"></div>
-                            <div className="bg-red-600 w-full rounded-xl border-4 border-yellow-400 shadow-2xl relative overflow-hidden text-center pt-8 pb-12 px-4 z-10">
-                                {/* Removed top-right close button */}
-                                <div className="absolute -top-10 -left-10 w-24 h-24 bg-red-700 rounded-full"></div>
-                                <div className="absolute -top-10 -right-10 w-24 h-24 bg-red-700 rounded-full"></div>
-                                <h3 className="text-yellow-200 font-bold text-lg mb-2 tracking-widest">手气炸裂</h3>
-                                <div className="text-white text-sm mb-4">恭喜抽中红包</div>
-                                <div className="relative inline-block mb-4">
-                                    <span className="text-5xl font-black text-yellow-300 drop-shadow-md">
-                                        {selectedCardIndex !== null ? cards[selectedCardIndex].val : '0.00'}
-                                    </span>
-                                    <span className="text-yellow-200 text-xl font-bold ml-1">元</span>
-                                </div>
-                                <button onClick={() => setShowDrawPopup(false)} className="w-full bg-yellow-400 text-red-800 font-bold py-2 rounded-full shadow-lg active:scale-95 transition-transform">
-                                    放入钱包
-                                </button>
-                            </div>
-                            <button onClick={() => setShowDrawPopup(false)} className="mt-6 bg-white/20 p-2 rounded-full border border-white/50 text-white backdrop-blur-sm hover:bg-white/30 transition-colors z-10">
-                                <X size={24}/>
-                            </button>
-                        </div>
-                    </div>
-                )}
-
-                {/* --- Rank Up Popup (Simulated) --- */}
-                {showRankPopup && (
-                    <div className="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-black/80 px-4">
-                        <div className="relative w-full max-w-sm flex flex-col items-center">
-                            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                                {[...Array(20)].map((_, i) => (
-                                    <div key={i} className="absolute w-2 h-4 bg-yellow-400 animate-pulse" 
-                                        style={{
-                                            left: `${Math.random() * 100}%`, 
-                                            top: `${Math.random() * 100}%`,
-                                            transform: `rotate(${Math.random() * 360}deg)`
-                                        }}>
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="bg-gradient-to-b from-yellow-100 to-white w-full rounded-2xl p-6 text-center relative shadow-2xl border-4 border-yellow-400 transform scale-100 transition-all z-10">
-                                {/* Removed top-right close button */}
-                                <div className="text-4xl mb-2">🚀</div>
-                                <h2 className="text-2xl font-black text-red-600 mb-2">排名飙升!</h2>
-                                <p className="text-gray-600 mb-4">
-                                    恭喜！您刚刚超越了 <span className="text-red-600 font-bold">3</span> 位服务者<br/>
-                                    现居 <span className="text-2xl font-bold text-red-600">No.{rank}</span>
-                                </p>
-                                <div className="bg-red-50 p-3 rounded-lg border border-red-100 mb-4">
-                                    <p className="text-sm text-red-800">
-                                        距离 <strong>388元</strong> 现金大奖<br/>
-                                        仅差 <strong>15</strong> 积分！
-                                    </p>
-                                </div>
-                                <div className="flex gap-3">
-                                    <button onClick={handleShowOffClick} className="flex-1 py-2 rounded-full border-2 border-yellow-500 text-yellow-700 font-bold">炫耀一下</button>
-                                    <button className="flex-1 py-2 rounded-full bg-gradient-to-r from-red-500 to-red-700 text-white font-bold shadow-lg" onClick={() => setShowRankPopup(false)}>继续冲榜</button>
-                                </div>
-                            </div>
-                            <button onClick={() => setShowRankPopup(false)} className="mt-6 bg-white/20 p-2 rounded-full border border-white/50 text-white backdrop-blur-sm hover:bg-white/30 transition-colors z-10">
-                                <X size={24}/>
-                            </button>
-                        </div>
-                    </div>
-                )}
-
-                </div>
-            );
+        const DATA_CONFIG = {
+          koi: {
+            type: 'koi',
+            title: '【上上吉 · 锦鲤签】',
+            stamp: '全品类免单',
+            actorName: '社区维修大神 · 王师傅',
+            actorRole: '金牌维修',
+            actorAvatarColor: 'bg-yellow-500',
+            speech: '锦鲤附体，万事大吉！生活里的那些小麻烦，今天统统由我来买单。愿这份从天而降的惊喜，能换您一天的好心情！（全品类通用，无上限）',
+            buttons: [
+              { text: '🎉 哇！去挑选祝福', action: 'gold_list', primary: true },
+              { text: '炫耀一下', action: 'share', primary: false }
+            ],
+            profileData: { distance: '1.2km' } 
+          },
+          redPacketScenarios: [
+            {
+              id: 'A',
+              type: 'red_packet',
+              title: '【宜 · 甩手掌柜】',
+              hasRedPacket: true,
+              amount: '0.28',
+              actorName: '金牌保洁 · 张阿姨',
+              actorRole: '热心肠阿姨',
+              actorAvatarColor: 'bg-pink-500',
+              speech: '把时间浪费在美好的事物上，才不算虚度。愿您的生活窗明几净，心中无尘。这点小小心意请收下，愿您哪怕偷得半日闲，也是岁月静好。',
+              buttons: [{ text: '看看社区谁在送祝福', action: 'gold_list', primary: true }],
+            },
+            {
+              id: 'D',
+              type: 'red_packet',
+              title: '【财运 · 爆棚】',
+              hasRedPacket: true,
+              amount: '0.88',
+              actorName: '社区合伙人 · 老陈',
+              actorRole: '凡尔赛邻居',
+              actorAvatarColor: 'bg-green-600',
+              speech: '好运就是：努力的人总会被看见。愿您脚下的路越走越宽，手中的机会越来越多。这点财运红包，祝您开启富足的一天，积少成多！',
+              buttons: [{ text: '看看社区谁在送祝福', action: 'gold_list', primary: true }],
+            }
+          ],
+          blessings: [
+            {
+              id: 'E',
+              type: 'blessing',
+              title: '【上上签 · 平安】',
+              hasRedPacket: false,
+              actorName: '社区保安 · 老张',
+              actorRole: '安全卫士',
+              actorAvatarColor: 'bg-indigo-600',
+              speech: '不管多晚回家，小区的灯我都为你留着。出入平安，就是最大的福气。',
+              buttons: [{ text: '给他点个赞', action: 'like', primary: true }],
+            },
+            {
+              id: 'F',
+              type: 'blessing',
+              title: '【上上签 · 暖胃】',
+              hasRedPacket: false,
+              actorName: '外卖小哥 · 小李',
+              actorRole: '城市骑士',
+              actorAvatarColor: 'bg-orange-500',
+              speech: '忙归忙，别忘了一日三餐。按时吃饭，身体才是革命的本钱。',
+              buttons: [{ text: '给他点个赞', action: 'like', primary: true }],
+            }
+          ]
         };
 
-        ReactDOM.render(<App />, document.getElementById('root'));
+        const MARQUEE_DATA = [
+          "恭喜 138****1234 抽中【全品类免单】，王师傅买单！",
+          "恭喜 159****9876 刚刚提现 0.88 元红包！",
+          "恭喜 186****5678 获得 50元 维修基金！"
+        ];
+
+        const FIREWORKS = Array.from({ length: 15 }).map((_, i) => ({
+          id: i,
+          left: `${Math.random() * 100}%`,
+          top: `${Math.random() * 100}%`,
+          delay: `${Math.random() * 2}s`,
+          color: ['bg-yellow-400', 'bg-red-500', 'bg-orange-400'][Math.floor(Math.random() * 3)]
+        }));
+
+        // --- 主组件 ---
+        function DailyShakeAppV2() {
+          const [viewState, setViewState] = useState('home');
+          const [shakeResult, setShakeResult] = useState(null);
+          const [showShareModal, setShowShareModal] = useState(false);
+          const [marqueeIndex, setMarqueeIndex] = useState(0);
+          const [shakeCount, setShakeCount] = useState(3);
+          const [toastMessage, setToastMessage] = useState(null);
+
+          useEffect(() => {
+            const interval = setInterval(() => {
+              setMarqueeIndex((prev) => (prev + 1) % MARQUEE_DATA.length);
+            }, 3000);
+            return () => clearInterval(interval);
+          }, []);
+
+          const showToast = (msg) => {
+            setToastMessage(msg);
+            setTimeout(() => setToastMessage(null), 2000);
+          };
+
+          const handleShake = () => {
+            if (shakeCount <= 0) {
+                showToast("今日次数已用完，请分享给好友！");
+                return;
+            }
+            setViewState('shaking');
+            
+            setTimeout(() => {
+              setShakeCount(prev => prev - 1);
+              
+              const rand = Math.random();
+              
+              if (rand < 0.1) {
+                setShakeResult(DATA_CONFIG.koi);
+                setViewState('modal_result');
+              } else if (rand < 0.5) {
+                const randomScene = DATA_CONFIG.redPacketScenarios[Math.floor(Math.random() * DATA_CONFIG.redPacketScenarios.length)];
+                setShakeResult(randomScene);
+                setViewState('modal_redpacket');
+              } else {
+                const randomBlessing = DATA_CONFIG.blessings[Math.floor(Math.random() * DATA_CONFIG.blessings.length)];
+                setShakeResult(randomBlessing);
+                setViewState('modal_result');
+              }
+            }, 1500);
+          };
+
+          const handleOpenRedPacket = () => {
+            setViewState('modal_result');
+          };
+
+          const handleCloseModal = () => {
+            setViewState('home');
+          };
+
+          const handleResultAction = (action) => {
+            if (action === 'gold_list') {
+              setViewState('page_gold_list');
+            } else if (action === 'share') {
+              setShowShareModal(true);
+            } else if (action === 'like') {
+              showToast("点赞成功！感谢您的鼓励 ❤️");
+              setTimeout(() => {
+                setViewState('home');
+              }, 1500);
+            }
+          };
+
+          const handleCardClick = (worker) => {
+            setShakeResult({
+              actorName: worker.name,
+              actorRole: worker.role,
+              actorAvatarColor: worker.avatarColor,
+              profileData: {
+                 distance: worker.distance,
+                 skills: worker.skills,
+                 review: "非常专业，服务态度好！", 
+                 serviceCount: worker.servedCount
+              }
+            });
+            setViewState('page_profile');
+          };
+
+          // --- 子组件渲染 ---
+
+          const Marquee = () => (
+            <div className="bg-black/20 text-white/90 text-xs py-1.5 px-4 rounded-full backdrop-blur-sm inline-flex items-center gap-2 max-w-[90%] overflow-hidden mx-auto mt-2 border border-white/10">
+               <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
+               <div className="animate-fade-in key={marqueeIndex}">
+                 {MARQUEE_DATA[marqueeIndex]}
+               </div>
+            </div>
+          );
+
+          const Toast = () => {
+            if (!toastMessage) return null;
+            return (
+              <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[70] bg-black/80 text-white px-6 py-3 rounded-lg shadow-xl text-sm font-medium animate-fade-in flex items-center gap-2">
+                 <ThumbsUp className="w-4 h-4 text-yellow-400" />
+                 {toastMessage}
+              </div>
+            );
+          };
+
+          // 1. 主会场
+          const renderHome = () => (
+            <div className="relative flex flex-col min-h-screen bg-gradient-to-b from-[#D92C2C] to-[#A61B1B] overflow-x-hidden">
+              <div className="pt-8 pb-4 text-center z-20 flex-shrink-0">
+                <h1 className="text-4xl font-black text-[#FFE699] drop-shadow-[0_2px_2px_rgba(0,0,0,0.3)] tracking-wide" style={{ fontFamily: 'serif' }}>
+                  摇好运，拿免单
+                </h1>
+                <div className="flex items-center justify-center gap-2 mt-1">
+                   <div className="h-[1px] w-4 bg-[#FFE699]/50"></div>
+                   <p className="text-white text-base font-medium tracking-widest text-shadow">邻工送好礼 · 天天上上签</p>
+                   <div className="h-[1px] w-4 bg-[#FFE699]/50"></div>
+                </div>
+                <Marquee />
+              </div>
+
+              <div className="flex-1 relative flex flex-col items-center justify-center z-10 py-10 min-h-[400px]">
+                <div className="absolute inset-0 pointer-events-none">
+                   <div className="absolute top-1/4 left-8 animate-[float_3s_ease-in-out_infinite]">
+                     <div className="w-16 h-16 rounded-full bg-gradient-to-br from-yellow-200/40 to-yellow-500/10 backdrop-blur-sm border border-yellow-200/50 flex items-center justify-center shadow-lg">
+                        <span className="text-yellow-100 font-bold text-xs drop-shadow-md">免单</span>
+                     </div>
+                   </div>
+                   <div className="absolute top-1/3 right-6 animate-[float_4s_ease-in-out_infinite_1s]">
+                     <div className="w-14 h-14 rounded-full bg-gradient-to-br from-red-200/30 to-red-500/10 backdrop-blur-sm border border-white/30 flex items-center justify-center shadow-lg">
+                        <span className="text-white font-bold text-xs drop-shadow-md">上上签</span>
+                     </div>
+                   </div>
+                   <div className="absolute bottom-1/3 left-12 animate-[float_3.5s_ease-in-out_infinite_0.5s]">
+                     <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-200/30 to-orange-500/10 backdrop-blur-sm border border-orange-200/40 flex items-center justify-center shadow-lg">
+                        <span className="text-orange-100 font-bold text-[10px] drop-shadow-md">现金红包</span>
+                     </div>
+                   </div>
+                </div>
+
+                <div className={`relative mt-4 cursor-pointer transition-transform ${viewState === 'shaking' ? 'animate-[shake_0.8s_ease-in-out_infinite]' : ''}`} onClick={handleShake}>
+                   <div className="absolute -inset-10 bg-yellow-500/20 blur-2xl rounded-full"></div>
+                   
+                   <div className="w-40 h-52 bg-gradient-to-r from-yellow-700 via-yellow-500 to-yellow-800 rounded-b-3xl rounded-t-lg border-x-2 border-b-4 border-yellow-900 shadow-2xl relative z-20 flex justify-center overflow-hidden">
+                      <div className="absolute top-8 w-full h-1 bg-yellow-900/30"></div>
+                      <div className="absolute bottom-8 w-full h-1 bg-yellow-900/30"></div>
+                      <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/wood-pattern.png')] opacity-30 mix-blend-overlay"></div>
+                      <div className="mt-16 w-16 h-16 bg-red-700/90 rounded-full flex items-center justify-center border-2 border-yellow-300 shadow-inner">
+                         <span className="text-3xl font-serif text-yellow-100 font-bold">吉</span>
+                      </div>
+                   </div>
+
+                   <div className="absolute -top-16 left-0 w-full h-full z-10 pointer-events-none">
+                      <div className="absolute left-[15%] top-4 transform -rotate-[20deg] origin-bottom">
+                         <div className={`w-7 h-32 bg-yellow-200 rounded-t-md border border-yellow-700 shadow-md flex items-start justify-center pt-2 ${viewState === 'shaking' ? 'animate-[stickMove_0.3s_infinite_0s]' : ''}`}>
+                            <span className="text-xs text-red-800 font-bold writing-vertical">免单</span>
+                         </div>
+                      </div>
+                      <div className="absolute left-[30%] top-0 transform -rotate-[10deg] origin-bottom">
+                         <div className={`w-7 h-36 bg-yellow-200 rounded-t-md border border-yellow-700 shadow-md flex items-start justify-center pt-2 ${viewState === 'shaking' ? 'animate-[stickMove_0.35s_infinite_0.1s]' : ''}`}>
+                            <span className="text-xs text-red-800 font-bold writing-vertical">现金红包</span>
+                         </div>
+                      </div>
+                      <div className="absolute left-[45%] -top-2 transform rotate-0 origin-bottom z-10">
+                         <div className={`w-8 h-40 bg-[#FFD700] rounded-t-md border border-yellow-700 shadow-lg flex items-start justify-center pt-2 ${viewState === 'shaking' ? 'animate-[stickMove_0.25s_infinite_0.05s]' : ''}`}>
+                            <span className="text-sm text-red-900 font-black writing-vertical tracking-widest">上上签</span>
+                         </div>
+                      </div>
+                      <div className="absolute left-[60%] top-0 transform rotate-[10deg] origin-bottom">
+                         <div className={`w-7 h-36 bg-yellow-200 rounded-t-md border border-yellow-700 shadow-md flex items-start justify-center pt-2 ${viewState === 'shaking' ? 'animate-[stickMove_0.33s_infinite_0.15s]' : ''}`}>
+                            <span className="text-xs text-red-800 font-bold writing-vertical">马上加薪</span>
+                         </div>
+                      </div>
+                      <div className="absolute left-[75%] top-4 transform rotate-[20deg] origin-bottom">
+                         <div className={`w-7 h-32 bg-yellow-200 rounded-t-md border border-yellow-700 shadow-md flex items-start justify-center pt-2 ${viewState === 'shaking' ? 'animate-[stickMove_0.28s_infinite_0.2s]' : ''}`}>
+                            <span className="text-xs text-red-800 font-bold writing-vertical">马到成功</span>
+                         </div>
+                      </div>
+                   </div>
+
+                   <div className="absolute bottom-4 -left-4 z-30 w-14 h-20 bg-[#f5d0b0] rounded-r-3xl border-l-0 border-2 border-[#e6b89c] rotate-12 shadow-lg"></div>
+                   <div className="absolute bottom-4 -right-4 z-30 w-14 h-20 bg-[#f5d0b0] rounded-l-3xl border-r-0 border-2 border-[#e6b89c] -rotate-12 shadow-lg"></div>
+                </div>
+
+                <div className="mt-8 z-20 flex flex-col items-center">
+                  <button 
+                     onClick={handleShake}
+                     className="bg-gradient-to-b from-yellow-300 to-yellow-500 text-red-900 text-xl font-black py-4 px-12 rounded-full shadow-[0_6px_0_#b45309,0_15px_20px_rgba(0,0,0,0.3)] active:shadow-[0_2px_0_#b45309] active:translate-y-1 transition-all border-2 border-yellow-200"
+                  >
+                     摇 一 摇
+                  </button>
+                  <div className="mt-3 bg-black/20 px-3 py-1 rounded-full text-[#FFE699] text-sm font-medium">
+                     今日摇签数：<span className="font-bold text-white text-lg">{shakeCount}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* 底部功能区 */}
+              <div className="bg-white rounded-t-3xl pt-6 pb-8 shadow-[0_-4px_20px_rgba(0,0,0,0.2)] z-30 relative flex flex-col gap-6 w-full mt-auto">
+                
+                {/* 1. 好运接力模块 */}
+                <div className="px-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="font-bold text-gray-800 text-sm">好运接力 · 有福同享</h3>
+                    <span className="text-xs text-gray-500">已成功传递好运 <span className="text-red-500 font-bold">3</span> 人</span>
+                  </div>
+                  <div className="bg-red-50 border border-red-100 rounded-xl p-3 flex items-center gap-3">
+                    <div className="bg-red-100 p-2 rounded-full">
+                      <Gift className="w-5 h-5 text-red-500" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-xs text-gray-700">送好友一个<span className="text-red-600 font-bold">【必中红包】</span></p>
+                      <p className="text-[10px] text-gray-400">你将获得<span className="text-red-600 font-bold">免单加速</span></p>
+                    </div>
+                    <button 
+                      onClick={() => setShowShareModal(true)}
+                      className="bg-red-500 hover:bg-red-600 text-white text-xs font-bold py-1.5 px-3 rounded-full shadow-lg active:scale-95 transition-transform"
+                    >
+                      发好运红包
+                    </button>
+                  </div>
+                </div>
+
+                {/* 2. 社区服务高手轮播 */}
+                <div className="flex flex-col pl-4">
+                  <h3 className="font-bold text-gray-800 text-sm mb-3 flex items-center gap-1">
+                     <Star className="w-4 h-4 text-yellow-500 fill-current" /> 
+                     社区服务高手
+                  </h3>
+                  <div className="flex gap-3 overflow-x-auto pr-4 pb-2 scrollbar-hide">
+                    {RECOMMENDED_WORKERS.map(worker => (
+                      <div key={worker.id} className="min-w-[240px] w-[240px] bg-white border border-gray-100 rounded-xl p-3 shadow-md flex flex-col flex-shrink-0">
+                         <div className="flex items-start gap-3 mb-2">
+                            <div className={`w-10 h-10 ${worker.avatarColor} rounded-full flex items-center justify-center text-white text-sm font-bold shadow-sm flex-shrink-0`}>
+                               {worker.name[0]}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                               <div className="flex items-center gap-2">
+                                  <span className="font-bold text-gray-800 text-sm truncate">{worker.name}</span>
+                                  <span className="text-[10px] bg-gray-100 text-gray-500 px-1 rounded">{worker.role}</span>
+                               </div>
+                               <div className="flex items-center gap-1 text-[10px] text-gray-400 mt-0.5">
+                                  <MapPin className="w-3 h-3" />
+                                  <span>本社区 · {worker.distance}</span>
+                               </div>
+                            </div>
+                         </div>
+                         
+                         <p className="text-[11px] text-gray-600 leading-relaxed mb-3 bg-gray-50 p-2 rounded-lg break-words">
+                            "{worker.desc}"
+                         </p>
+                         
+                         <div className="mt-auto flex items-center justify-between border-t border-gray-50 pt-2">
+                            <span className="text-[10px] text-orange-500 font-medium flex items-center gap-0.5">
+                               <Heart className="w-3 h-3 fill-current" /> 被邻居推荐 {worker.recommendCount} 次
+                            </span>
+                            <button 
+                               onClick={() => handleCardClick(worker)}
+                               className="text-xs bg-gray-900 text-white px-2.5 py-1 rounded-full font-bold active:scale-95 hover:bg-gray-800"
+                            >
+                               查看详情
+                            </button>
+                         </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+              </div>
+
+              <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-yellow-200 to-transparent pointer-events-none"></div>
+            </div>
+          );
+
+          // 2. 遮罩弹窗 - 红包
+          const renderModalRedPacket = () => (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm animate-fade-in px-6">
+              <div className="w-full max-w-sm relative animate-scale-up">
+                 <div className="bg-[#D92C2C] rounded-2xl overflow-hidden shadow-2xl relative aspect-[3/4] flex flex-col items-center border border-red-500">
+                    <div className="absolute -top-20 -left-20 w-60 h-60 bg-red-600 rounded-full blur-3xl opacity-50"></div>
+                    
+                    <div className="w-[120%] h-[40%] bg-[#c02525] rounded-b-[100%] absolute top-0 shadow-lg z-10 flex justify-center pt-8">
+                       <div className={`w-16 h-16 ${shakeResult.actorAvatarColor} rounded-full border-2 border-yellow-200 p-0.5 shadow-md z-20`}>
+                         <div className="w-full h-full rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                            <User className="text-gray-500 w-10 h-10 mt-2" />
+                         </div>
+                       </div>
+                    </div>
+
+                    <div className="mt-28 flex flex-col items-center z-10 w-full px-6">
+                       <h3 className="text-[#FFE699] text-lg font-bold">{shakeResult.actorName}</h3>
+                       <p className="text-red-100/80 text-xs mt-1">给您发了一个好运红包</p>
+                       
+                       <p className="text-[#FFE699] text-2xl font-serif font-bold mt-8 tracking-widest">
+                          祝您诸事顺遂
+                       </p>
+
+                       <button 
+                         onClick={handleOpenRedPacket}
+                         className="mt-12 w-20 h-20 bg-[#FFE699] text-[#D92C2C] rounded-full border-4 border-yellow-100 shadow-[0_0_20px_rgba(255,230,153,0.6)] flex items-center justify-center text-3xl font-black animate-[bounce_2s_infinite]"
+                       >
+                         開
+                       </button>
+                    </div>
+                    
+                    <div className="absolute bottom-4 text-white/30 text-xs">每日一摇 · 上上吉</div>
+                 </div>
+              </div>
+            </div>
+          );
+
+          // 3. 遮罩弹窗 - 结果详情
+          const renderModalResult = () => {
+            const isKoi = shakeResult.type === 'koi';
+            const isBlessing = shakeResult.type === 'blessing';
+            
+            return (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm animate-fade-in p-4">
+                {isKoi && (
+                  <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                     {FIREWORKS.map(fw => (
+                       <div 
+                         key={fw.id} 
+                         className={`absolute w-2 h-2 rounded-full ${fw.color} animate-[ping_1s_ease-out_infinite]`}
+                         style={{ left: fw.left, top: fw.top, animationDelay: fw.delay }}
+                       ></div>
+                     ))}
+                  </div>
+                )}
+
+                <div className="w-full max-w-xs relative animate-scale-up">
+                   <button onClick={handleCloseModal} className="absolute -bottom-14 left-1/2 -translate-x-1/2 text-white/70 border border-white/30 rounded-full p-2">
+                      <X className="w-6 h-6" />
+                   </button>
+
+                   <div className="bg-white rounded-2xl overflow-hidden shadow-2xl relative">
+                      <div className={`h-2 w-full ${isKoi ? 'bg-gradient-to-r from-orange-400 to-red-500' : isBlessing ? 'bg-gradient-to-r from-indigo-400 to-blue-500' : 'bg-red-600'}`}></div>
+
+                      <div className="p-5 text-center pb-2">
+                         <h2 className={`text-2xl font-black tracking-wide ${isKoi ? 'text-orange-600' : isBlessing ? 'text-indigo-800' : 'text-gray-800'}`}>
+                           {shakeResult.title}
+                         </h2>
+                         
+                         {isKoi && (
+                           <div className="absolute top-10 right-4 w-16 h-16 border-4 border-red-500 text-red-500 rounded-full flex items-center justify-center font-bold text-xs rotate-[-12deg] opacity-80 animate-pulse bg-white/80">
+                              <div>
+                                <div>全品类</div>
+                                <div>免单</div>
+                              </div>
+                           </div>
+                         )}
+
+                         {!isKoi && !isBlessing && shakeResult.hasRedPacket && (
+                           <div className="mt-1 flex items-baseline justify-center text-red-500 gap-1">
+                              <span className="text-sm">已入账</span>
+                              <span className="text-3xl font-bold">{shakeResult.amount}</span>
+                              <span className="text-sm">元</span>
+                           </div>
+                         )}
+                         
+                         {isBlessing && (
+                           <div className="mt-2 text-indigo-500 text-xs font-medium">
+                              来自社区服务者的暖心祝福
+                           </div>
+                         )}
+                      </div>
+
+                      <div className="px-5 py-2">
+                         <div className={`rounded-xl p-4 flex gap-3 border ${isBlessing ? 'bg-indigo-50 border-indigo-100' : 'bg-gray-50 border-gray-100'}`}>
+                            <div className="flex-shrink-0 flex flex-col items-center">
+                               <div className={`w-10 h-10 ${shakeResult.actorAvatarColor} rounded-full flex items-center justify-center text-white border border-white shadow-sm`}>
+                                  {isBlessing && shakeResult.actorRole.includes('保安') ? <Shield className="w-5 h-5"/> : <User className="w-6 h-6" />}
+                               </div>
+                               <div className="text-[9px] text-gray-500 mt-1 font-bold">{shakeResult.actorName.split('·')[1]}</div>
+                            </div>
+                            <div className="relative">
+                               <div className={`absolute top-3 -left-1.5 w-3 h-3 bg-white border-l border-b border-gray-200 transform rotate-45`}></div>
+                               <div className="bg-white p-3 rounded-lg border border-gray-200 text-sm text-gray-700 leading-relaxed shadow-sm relative z-10 text-left">
+                                  {shakeResult.speech}
+                               </div>
+                            </div>
+                         </div>
+                      </div>
+
+                      <div className="p-5 pt-2 pb-6">
+                         {isKoi ? (
+                            <div className="space-y-2">
+                              {shakeResult.buttons.map((btn, i) => (
+                                <button
+                                  key={i}
+                                  onClick={() => handleResultAction(btn.action)}
+                                  className={`w-full py-3 rounded-lg font-bold text-sm flex items-center justify-center gap-1
+                                    ${btn.primary ? 'bg-orange-500 text-white shadow-lg shadow-orange-200' : 'bg-white border border-gray-200 text-gray-600'}
+                                  `}
+                                >
+                                  {btn.text}
+                                </button>
+                              ))}
+                            </div>
+                         ) : (
+                            <button
+                              onClick={() => handleResultAction(shakeResult.buttons[0].action)}
+                              className={`w-full py-3.5 rounded-lg font-bold text-base shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-transform
+                                ${isBlessing 
+                                  ? 'bg-indigo-600 text-white shadow-indigo-200 hover:bg-indigo-700' 
+                                  : 'bg-[#D92C2C] text-white shadow-red-100 hover:bg-[#b02020]'
+                                }
+                              `}
+                            >
+                              {shakeResult.buttons[0].text} 
+                              {shakeResult.buttons[0].action === 'like' ? <ThumbsUp className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                            </button>
+                         )}
+                      </div>
+                   </div>
+                </div>
+              </div>
+            );
+          };
+
+          // 4. 金牌服务者列表页
+          const renderGoldList = () => {
+            return (
+               <div className="absolute inset-0 z-40 bg-gray-50 overflow-y-auto animate-fade-in flex flex-col">
+                  <div className="bg-[#D92C2C] text-white p-4 pt-10 pb-6 shadow-md relative z-10">
+                     <button onClick={() => setViewState('home')} className="absolute top-11 left-4 bg-white/20 p-1.5 rounded-full hover:bg-white/30">
+                       <X className="w-5 h-5"/>
+                     </button>
+                     <h1 className="text-center font-bold text-lg flex items-center justify-center gap-2">
+                       <Heart className="w-5 h-5 text-yellow-300 fill-current" />
+                       社区祝福排行榜
+                     </h1>
+                     <p className="text-center text-xs text-red-200 mt-1">
+                        {shakeResult && shakeResult.type === 'koi' ? '锦鲤免单生效中 · 祝福已送达' : '感恩遇见 · 传递温暖'}
+                     </p>
+                  </div>
+                  
+                  <div className="flex-1 p-4 space-y-3 pb-20">
+                     {GOLD_PROVIDERS.map(provider => (
+                       <div key={provider.id} className="bg-white rounded-xl p-4 shadow-sm flex gap-4 items-center">
+                          <div className={`w-14 h-14 ${provider.avatarColor} rounded-full flex items-center justify-center text-white border-2 border-gray-100 shadow-sm flex-shrink-0`}>
+                             <User className="w-8 h-8" />
+                          </div>
+                          <div className="flex-1">
+                             <div className="flex justify-between items-start">
+                                <div>
+                                  <h3 className="font-bold text-gray-800">{provider.name} <span className="text-xs font-normal text-gray-500 bg-gray-100 px-1 rounded ml-1">{provider.role}</span></h3>
+                                  <div className="flex items-center gap-1 mt-1">
+                                     <div className="flex text-yellow-400">
+                                       <Star className="w-3 h-3 fill-current" />
+                                     </div>
+                                     <span className="text-xs text-gray-500 font-bold">{provider.rating}</span>
+                                     <span className="text-[10px] text-gray-400">({provider.reviews}单)</span>
+                                  </div>
+                                </div>
+                                <button onClick={() => showToast(`已联系 ${provider.name}`)} className="bg-red-50 text-red-600 text-xs font-bold px-3 py-1.5 rounded-full border border-red-100 active:bg-red-100">
+                                   找TA帮忙
+                                </button>
+                             </div>
+                             <div className="flex gap-2 mt-2 items-center flex-wrap">
+                                {provider.skills.map((skill, i) => (
+                                  <span key={i} className="text-[10px] text-gray-500 bg-gray-50 px-1.5 py-0.5 rounded border border-gray-100">
+                                     {skill}
+                                  </span>
+                                ))}
+                                
+                                {provider.blessingsSent > 0 && (
+                                  <span className="text-[10px] text-red-500 bg-red-50 px-1.5 py-0.5 rounded border border-red-100 flex items-center gap-1">
+                                     <Heart className="w-3 h-3 fill-current" /> 已送祝福 {provider.blessingsSent} 次
+                                  </span>
+                                )}
+                             </div>
+                          </div>
+                       </div>
+                     ))}
+                     
+                     <div className="text-center text-xs text-gray-400 mt-4">--- 已经到底啦 ---</div>
+                  </div>
+               </div>
+            );
+          };
+
+          // 5. 个人主页渲染
+          const renderProfile = () => {
+             if (!shakeResult) return null;
+             const { actorName, profileData, actorAvatarColor } = shakeResult;
+             return (
+               <div className="absolute inset-0 z-40 bg-gray-50 overflow-y-auto animate-fade-in">
+                  <div className="h-40 bg-gray-800 relative">
+                     <button onClick={() => setViewState('home')} className="absolute top-4 left-4 bg-black/30 p-2 rounded-full text-white z-20">
+                       <X className="w-5 h-5"/>
+                     </button>
+                     <div className="absolute bottom-0 w-full h-10 bg-gray-50 rounded-t-3xl"></div>
+                  </div>
+                  
+                  <div className="px-6 -mt-16 relative z-10">
+                     <div className="flex justify-between items-end">
+                        <div className={`w-20 h-20 ${actorAvatarColor} rounded-full border-4 border-white shadow-md flex items-center justify-center`}>
+                           <User className="text-white w-10 h-10" />
+                        </div>
+                        <button className="bg-red-50 text-red-500 px-3 py-1 rounded-full text-xs font-bold mb-2 flex items-center gap-1">
+                           <Heart className="w-3 h-3 fill-current" /> 关注
+                        </button>
+                     </div>
+                     <h1 className="text-xl font-bold mt-2 text-gray-800">{actorName}</h1>
+                     <p className="text-xs text-gray-500 mt-1">服务社区：{profileData.distance} 内 | 评分 5.0</p>
+                     
+                     <div className="flex flex-wrap gap-2 mt-4">
+                        {profileData.skills.map(s => (
+                           <span key={s} className="px-2 py-1 bg-gray-200 text-gray-600 text-xs rounded">{s}</span>
+                        ))}
+                     </div>
+
+                     <div className="mt-6 bg-white p-4 rounded-xl shadow-sm">
+                        <div className="text-sm font-bold mb-2">最新评价</div>
+                        <p className="text-xs text-gray-600 leading-relaxed">"{profileData.review}"</p>
+                        <div className="flex text-yellow-400 mt-2"><Star className="w-3 h-3 fill-current"/><Star className="w-3 h-3 fill-current"/><Star className="w-3 h-3 fill-current"/><Star className="w-3 h-3 fill-current"/><Star className="w-3 h-3 fill-current"/></div>
+                     </div>
+                  </div>
+
+                  <div className="fixed bottom-0 w-full p-4 bg-white border-t border-gray-100 flex gap-3">
+                     <button className="flex-1 bg-red-600 text-white font-bold py-3 rounded-lg shadow-lg" onClick={() => alert("发起预约")}>找TA帮忙</button>
+                  </div>
+               </div>
+             )
+          };
+
+          const renderShareModal = () => {
+            if (!showShareModal) return null;
+            return (
+              <div className="fixed inset-0 z-[60] bg-black/90 flex flex-col items-end p-8" onClick={() => setShowShareModal(false)}>
+                 <div className="text-white text-right space-y-2">
+                    <h3 className="text-xl font-bold">点击右上角发送给朋友</h3>
+                    <p className="text-yellow-400 text-sm">好友领取后，你得免单加速卡！</p>
+                 </div>
+              </div>
+            );
+          };
+
+          return (
+            <div className="w-full h-screen mx-auto max-w-md shadow-2xl overflow-y-auto overflow-x-hidden font-sans text-gray-800 relative select-none scrollbar-hide">
+              {renderHome()}
+              {viewState === 'modal_redpacket' && renderModalRedPacket()}
+              {viewState === 'modal_result' && renderModalResult()}
+              {viewState === 'page_gold_list' && renderGoldList()}
+              {viewState === 'page_profile' && renderProfile()}
+              {renderShareModal()}
+              <Toast />
+            </div>
+          );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<DailyShakeAppV2 />);
     </script>
 </body>
 </html>
