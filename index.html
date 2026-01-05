@@ -2,702 +2,1005 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>新春免单 - 谁是你的“邻”距离</title>
-    <style>
-        :root {
-            --primary-red: #E02E24;
-            --primary-orange: #FF5000;
-            --bg-color: #f2f2f2;
-            --modal-mask: rgba(0, 0, 0, 0.75);
-        }
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>每日一摇上上吉</title>
+    
+    <!-- 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 引入 React 和 ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    
+    <!-- 引入 Babel 用于编译 JSX -->
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
 
-        body, html {
+    <!-- 引入中文字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f3f4f6;
             margin: 0;
             padding: 0;
-            width: 100%;
-            height: 100%;
-            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", Arial, sans-serif;
-            background-color: var(--bg-color);
-            background-image: radial-gradient(#ddd 1px, transparent 1px);
-            background-size: 20px 20px;
-            overflow: hidden;
-            user-select: none;
-            -webkit-user-select: none;
-            touch-action: none; 
-            -webkit-tap-highlight-color: transparent;
-            -webkit-text-size-adjust: 100%;
-        }
-
-        /* --- 1. 顶部氛围条 --- */
-        .top-bar {
-            position: fixed;
-            top: 0; left: 0; width: 100%; 
-            height: 40px;
-            padding-top: env(safe-area-inset-top);
-            background: rgba(0,0,0,0.8);
-            color: #fff;
-            display: flex;
-            align-items: center;
-            padding-left: 10px;
-            padding-right: 10px;
-            z-index: 100;
-            font-size: 12px;
-            backdrop-filter: blur(5px);
-            box-sizing: content-box;
-        }
-        .scrolling-text {
-            flex: 1; overflow: hidden; white-space: nowrap; margin-left: 10px; position: relative;
-        }
-        .scrolling-text span {
-            display: inline-block;
-            animation: scroll 12s linear infinite;
-        }
-        @keyframes scroll { from { transform: translateX(100%); } to { transform: translateX(-150%); } }
-
-        /* --- 2. 倒计时球 --- */
-        .timer-ball {
-            position: fixed;
-            top: calc(50px + env(safe-area-inset-top));
-            right: 15px;
-            width: 50px; height: 50px;
-            background: linear-gradient(180deg, #FF5000 0%, #E02E24 100%);
-            border-radius: 50%;
-            color: #fff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            box-shadow: 0 4px 10px rgba(224, 46, 36, 0.4);
-            z-index: 90;
-            border: 2px solid #fff;
-            animation: pulse 1s infinite;
-        }
-        .timer-ball b { font-size: 14px; line-height: 1; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-
-        /* --- 3. 游戏地图区域 --- */
-        .game-area {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            box-sizing: border-box;
-            padding-top: 40px; 
-            padding-bottom: 80px;
-        }
-
-        /* 新增：游戏大标题 */
-        .game-title {
-            position: absolute;
-            top: 12%; /* 修改点：从15%上移到12% */
-            left: 0;
-            width: 100%;
-            text-align: center;
-            pointer-events: none; /* 关键：不阻挡点击 */
-            z-index: 5; /* 位于头像之下 */
-            /* 修改点：移除了 animation: floatTitle ... */
-        }
-        .game-title h1 {
-            margin: 0;
-            font-size: 28px;
-            font-weight: 900;
-            color: var(--primary-red);
-            text-shadow: 2px 2px 0px #fff, -1px -1px 0 #fff, 0 4px 10px rgba(0,0,0,0.1);
-            letter-spacing: 1px;
-            font-style: italic;
-        }
-        .game-title .subtitle {
-            font-size: 12px;
-            color: #666;
-            background: rgba(255,255,255,0.8);
-            padding: 2px 8px;
-            border-radius: 10px;
-            display: inline-block;
-            margin-top: 5px;
+            overscroll-behavior: none; /* 防止下拉刷新干扰 */
         }
         
-        /* 中心的“我” */
-        .me-center {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 64px; height: 64px;
-            background: #fff;
-            border-radius: 50%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 10;
-            box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 80, 0, 0.3);
-            color: var(--primary-red);
-            font-weight: bold;
-            font-size: 12px;
-        }
-        .me-center img { width: 30px; margin-bottom: 2px; }
-        /* 雷达扫描波纹 */
-        .radar-wave {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 100px; height: 100px;
-            border: 1px solid rgba(255, 80, 0, 0.3);
-            border-radius: 50%;
-            animation: ripple 2s infinite linear;
-            pointer-events: none;
-        }
-        .radar-wave:nth-child(2) { animation-delay: 0.5s; }
-        .radar-wave:nth-child(3) { animation-delay: 1s; }
-        @keyframes ripple {
-            0% { width: 64px; height: 64px; opacity: 0.8; border-width: 2px; }
-            100% { width: 300px; height: 300px; opacity: 0; border-width: 0; }
+        .writing-vertical {
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            letter-spacing: 0.1em;
         }
 
-        /* 服务者头像 */
-        .avatar-node {
-            position: absolute;
-            width: 56px; height: 56px; /* 稍微加大一点头像 */
-            background: #fff;
-            border-radius: 50%;
-            border: 2px solid #fff;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            z-index: 20; /* 确保在标题之上 */
-            cursor: pointer;
-            overflow: visible; /* 允许标签溢出 */
-        }
-        /* 真实图片适配 */
-        .avatar-node img {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-            pointer-events: none;
-        }
-        .avatar-node.dead {
-            transform: scale(0);
-            opacity: 0;
-        }
-        /* 加大的标签样式 */
-        .avatar-label {
-            position: absolute;
-            bottom: -22px; /* 调整位置 */
-            background: linear-gradient(135deg, #fff 0%, #f0f0f0 100%);
-            padding: 4px 10px; /* 加大内边距 */
-            border-radius: 12px;
-            font-size: 12px; /* 加大字号 */
-            font-weight: bold; /* 加粗 */
-            color: #333;
-            white-space: nowrap;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            border: 1px solid #fff;
-            pointer-events: none;
-            z-index: 21;
-        }
-
-        /* --- 4. 底部道具栏 --- */
-        .bottom-hud {
-            position: fixed;
-            bottom: 20px;
-            left: 5%; width: 90%;
-            background: #fff;
-            border-radius: 50px;
-            height: 60px;
-            display: flex;
-            align-items: center;
-            padding: 0 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            z-index: 90;
-            box-sizing: border-box;
-            margin-bottom: env(safe-area-inset-bottom);
-        }
-        .hint-text {
-            flex: 1;
-            font-size: 12px;
-            color: #666;
-            margin-left: 10px;
-            line-height: 1.3;
-        }
-        .hint-text b { color: var(--primary-red); font-size: 14px; }
-        
-        .prop-btn {
-            background: linear-gradient(90deg, #FFD940 0%, #FFC107 100%);
-            border: none;
-            border-radius: 40px;
-            height: 44px;
-            padding: 0 20px;
-            color: #8B5900;
-            font-weight: bold;
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            box-shadow: 0 2px 5px rgba(255, 193, 7, 0.5);
-            animation: shake-btn 3s infinite;
-        }
-        @keyframes shake-btn {
-            0%, 90% { transform: rotate(0); }
-            92% { transform: rotate(-5deg); }
-            94% { transform: rotate(5deg); }
-            96% { transform: rotate(-5deg); }
-            98% { transform: rotate(5deg); }
-            100% { transform: rotate(0); }
-        }
-
-        /* --- 5. 档案详情弹窗 --- */
-        .modal-profile {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--modal-mask);
-            z-index: 200;
+        .scrollbar-hide::-webkit-scrollbar {
             display: none;
-            justify-content: center;
-            align-items: flex-end;
-            height: 100vh; 
-            height: -webkit-fill-available;
         }
-        .profile-card {
-            width: 100%;
-            height: 75vh;
-            background: #f8f8f8;
-            border-radius: 20px 20px 0 0;
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* 动画定义 */
+        @keyframes float { 
+            0%, 100% { transform: translateY(0); } 
+            50% { transform: translateY(-10px); } 
+        }
+        @keyframes shake { 
+            0% { transform: rotate(0deg); } 
+            25% { transform: rotate(5deg); } 
+            50% { transform: rotate(0deg); } 
+            75% { transform: rotate(-5deg); } 
+            100% { transform: rotate(0deg); } 
+        }
+        @keyframes stickMove { 
+            0%, 100% { transform: translateY(0); } 
+            50% { transform: translateY(-15px); } 
+        }
+        @keyframes fade-in { 
+            from { opacity: 0; } 
+            to { opacity: 1; } 
+        }
+        @keyframes scale-up { 
+            from { transform: scale(0.9); opacity: 0; } 
+            to { transform: scale(1); opacity: 1; } 
+        }
+        
+        /* 按钮流光擦亮动画 */
+        @keyframes shine-sweep {
+            0% { left: -100%; opacity: 0; }
+            20% { left: 100%; opacity: 1; }
+            100% { left: 100%; opacity: 0; }
+        }
+        .btn-shine {
             position: relative;
             overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            animation: slideUp 0.3s ease-out;
-            padding-bottom: env(safe-area-inset-bottom);
         }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-
-        .p-header {
-            background: #fff; padding: 20px; display: flex; align-items: center;
-        }
-        .p-avatar {
-            width: 60px; height: 60px; border-radius: 50%; margin-right: 15px;
-            display: flex; align-items: center; justify-content: center; overflow: hidden;
-            border: 2px solid #eee;
-        }
-        .p-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        
-        .p-info h2 { margin: 0; font-size: 18px; }
-        .p-tags span {
-            font-size: 10px; background: #FFF0E9; color: var(--primary-orange);
-            padding: 2px 5px; border-radius: 4px; margin-right: 5px;
+        .btn-shine::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 60%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.6), transparent);
+            transform: skewX(-25deg);
+            animation: shine-sweep 3s infinite;
         }
 
-        .p-stats {
-            display: flex; background: #fff; padding: 10px 0; margin-top: 1px;
+        /* 出签动画 */
+        @keyframes reveal-stick {
+            0% { transform: translateY(80px) scale(0.5); opacity: 0; }
+            100% { transform: translateY(-60px) scale(1.3); opacity: 1; }
         }
-        .p-stat { flex: 1; text-align: center; font-size: 12px; color: #999; border-right: 1px solid #eee; }
-        .p-stat b { display: block; font-size: 16px; color: #333; margin-bottom: 2px; }
-
-        .p-secret {
-            margin: 15px; background: #fff; border-radius: 10px; padding: 15px;
-        }
-        .secret-row {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 15px; font-size: 14px; color: #555;
-        }
-        .blur-strip {
-            position: relative;
-            color: transparent;
-            background: #eee;
-            border-radius: 4px;
-            padding: 2px 5px;
-            user-select: none;
-        }
-        .blur-strip::after {
-            content: '隐私保护中';
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 10px; color: #999;
-            background: rgba(255,255,255,0.5);
-            backdrop-filter: blur(4px);
-        }
-
-        .p-actions {
-            margin-top: auto;
-            background: #fff;
-            padding: 15px;
-            display: flex;
-            gap: 15px;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
-        }
-        .btn {
-            flex: 1; height: 44px; border-radius: 22px; border: none; font-weight: bold; font-size: 16px;
-        }
-        .btn-outline { background: #f5f5f5; color: #666; }
-        .btn-primary { 
-            background: linear-gradient(90deg, #FF6034 0%, #EE0A24 100%); 
-            color: #fff;
-            box-shadow: 0 4px 10px rgba(238, 10, 36, 0.3);
-        }
-
-        /* --- 6. 反馈弹窗 --- */
-        .modal-feedback {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
-            z-index: 300;
-            display: none;
-            align-items: center; justify-content: center;
-        }
-        .fb-card {
-            width: 80%;
-            background: #fff;
-            border-radius: 16px;
-            text-align: center;
-            padding: 25px 20px;
-            position: relative;
-            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            background: linear-gradient(180deg, #FFF5F5 0%, #FFFFFF 100%);
-            border: 2px solid #FFD940;
-        }
-        @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
-        .fb-icon { font-size: 40px; margin-bottom: 10px; display: block; }
-        .fb-title { font-size: 20px; color: var(--primary-red); font-weight: 800; margin: 0 0 10px 0; }
-        .fb-msg { font-size: 14px; color: #333; margin-bottom: 20px; line-height: 1.5; }
-        
-        .clue-box {
-            background: #FFF8D6;
-            border: 1px dashed #FFD940;
-            color: #B67B02;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 13px;
-            margin-bottom: 20px;
-            text-align: left;
-            display: flex;
-            align-items: center;
-        }
-        .clue-icon { font-size: 20px; margin-right: 10px; }
-
     </style>
 </head>
 <body>
+    <div id="root"></div>
 
-    <!-- 顶部 -->
-    <div class="top-bar">
-        <span style="color:#FFD940; font-weight:bold;">🔥 正在热抢</span>
-        <div class="scrolling-text">
-            <span>尾号8291用户猜中免单 · 尾号3302用户获得50元券 · 本轮竞猜即将结束</span>
-        </div>
-    </div>
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
 
-    <!-- 倒计时 -->
-    <div class="timer-ball">
-        <span>剩</span>
-        <b id="timer">05:00</b>
-    </div>
+        // --- 图标组件 ---
+        const Gift = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/></svg>;
+        const User = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>;
+        const ChevronRight = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>;
+        const Heart = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>;
+        const X = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 18 18"/></svg>;
+        const Star = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>;
+        const Shield = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>;
+        const ThumbsUp = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2h0a3.13 3.13 0 0 1 3 3.88Z"/></svg>;
+        const Medal = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15"/><path d="M11 12 5.12 2.2"/><path d="m13 12 5.88-9.8"/><path d="M8 7h8"/><circle cx="12" cy="17" r="5"/><path d="M12 18v-2h-.5"/></svg>;
+        const MapPin = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>;
+        const Briefcase = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>;
+        const ImageIcon = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>;
+        const MessageCircle = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>;
+        const ShoppingBag = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>;
+        const Users = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>;
+        const WechatIcon = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 10C17 14 14 17 10 17C9.3 17 8.7 16.9 8.1 16.7L5 18L5.7 15.2C4 14 3 12.1 3 10C3 6 6.1 3 10 3C13.9 3 17 6 17 10Z"/><path d="M21 15C21 17.8 18.8 20 16 20C15.6 20 15.2 20 14.8 19.9L13 21L13.4 19.2C12.5 18.9 11.7 18.4 11.2 17.8C11.1 17.5 11 17.3 11 17C11 14.2 13.2 12 16 12C18.8 12 21 14.2 21 15Z"/></svg>;
 
-    <!-- 游戏地图 -->
-    <div class="game-area" id="mapArea">
-        <div class="radar-wave"></div>
-        <div class="radar-wave"></div>
-        <div class="radar-wave"></div>
-        
-        <!-- 新增标题：位置在 12% top -->
-        <div class="game-title">
-            <h1>谁是你的“邻”距离</h1>
-            <!-- 修改点：文案变更 -->
-            <div class="subtitle">找到你身边3公里内的服务高手</div>
-        </div>
+        // --- 数据配置 ---
+        const RECOMMENDED_WORKERS = [
+          { 
+            id: 101, 
+            name: '刘阿姨', 
+            role: '金牌收纳师', 
+            avatarUrl: 'https://i.pravatar.cc/150?img=5',
+            distance: '0.3km',
+            skills: ['全屋收纳', '空间规划'],
+            servedCount: 520,
+            recommendCount: 188,
+            statsText: '已服务520+户', 
+            desc: '深耕本社区2年，擅长空间扩容，让您的家多出一间房。',
+            experience: '5年家政经验，2年专注收纳整理，曾服务过300+家庭。',
+            cases: ['客厅收纳对比', '儿童房整理', '衣橱换季']
+          },
+          { 
+            id: 102, 
+            name: '张师傅', 
+            role: '水电急修', 
+            avatarUrl: 'https://i.pravatar.cc/150?img=11',
+            distance: '0.6km', 
+            skills: ['电路检修', '卫浴安装'],
+            servedCount: 1350,
+            recommendCount: 456,
+            statsText: '累计急修1350次',
+            desc: '小区里的“全能救火员”，5分钟响应，守护用电用水安全。',
+            experience: '15年水电工经验，持证上岗，维修零差评。',
+            cases: ['半夜爆管抢修', '全屋电路改造', '智能马桶安装']
+          },
+          { 
+            id: 103, 
+            name: '小王', 
+            role: '代遛狗/喂猫', 
+            avatarUrl: 'https://i.pravatar.cc/150?img=33',
+            distance: '0.1km', 
+            skills: ['宠物陪护', '绝育接送'],
+            servedCount: 600,
+            recommendCount: 230,
+            desc: '资深铲屎官，春节/假期上门喂养，毛孩子交给我请放心。',
+            experience: '3年宠物店工作经验，懂宠物急救，有爱心有耐心。',
+            cases: ['春节上门喂猫', '大型犬代遛', '生病送医陪护']
+          }
+        ];
 
-        <div class="me-center">
-            <div style="font-size:24px;">🤪</div>
-            <div>我</div>
-        </div>
-        <!-- JS生成头像 -->
-    </div>
+        const GOLD_PROVIDERS = [
+          { id: 1, name: '张阿姨', role: '金牌保洁', avatarUrl: 'https://i.pravatar.cc/150?img=5', skills: ['深度清洁', '收纳'], rating: '5.0', reviews: 128, blessingsSent: 1205, experience: '8年保洁经验', cases: ['深度保洁', '开荒清洁'] },
+          { id: 2, name: '王师傅', role: '维修大神', avatarUrl: 'https://i.pravatar.cc/150?img=11', skills: ['水电急修', '家电清洗'], rating: '4.9', reviews: 342, blessingsSent: 893, experience: '20年维修老师傅', cases: ['空调清洗', '管道疏通'] },
+          { id: 3, name: '赵小哥', role: '极速跑腿', avatarUrl: 'https://i.pravatar.cc/150?img=33', skills: ['同城急送', '代买'], rating: '5.0', reviews: 890, blessingsSent: 2100, experience: '3年全城跑腿', cases: ['急送文件', '排队挂号'] },
+          { id: 4, name: '老陈', role: '社区推广', avatarUrl: 'https://i.pravatar.cc/150?img=68', skills: ['兼职达人', '地推'], rating: '4.8', reviews: 56, blessingsSent: 0, experience: '退休返聘，社区活地图', cases: ['地推宣传', '信息收集'] },
+          { id: 5, name: '李大厨', role: '上门做饭', avatarUrl: 'https://i.pravatar.cc/150?img=53', skills: ['川湘菜', '家宴'], rating: '5.0', reviews: 210, blessingsSent: 666, experience: '前饭店主厨', cases: ['年夜饭', '生日宴'] },
+        ];
 
-    <!-- 底部操作栏 -->
-    <div class="bottom-hud">
-        <div class="hint-text">
-            已有 <b>3,402人</b> 参与<br>
-            只有 1 人在你 100米 内！
-        </div>
-        <button class="prop-btn" onclick="useProp()">
-            🔍 高手线索提示 (剩<span id="propCount">2</span>)
-        </button>
-    </div>
+        const DATA_CONFIG = {
+          koi: {
+            type: 'koi',
+            title: '【上上吉 · 锦鲤签】',
+            stamp: '全品类免单',
+            actorName: '社区维修大神 · 王师傅',
+            actorRole: '金牌维修',
+            actorAvatarColor: 'bg-yellow-500',
+            speech: '锦鲤附体，万事大吉！生活里的那些小麻烦，今天统统由我来买单。愿这份从天而降的惊喜，能换您一天的好心情！（全品类通用，无上限）',
+            buttons: [
+              { text: '🎉 哇！去挑选祝福', action: 'gold_list', primary: true },
+              { text: '炫耀一下', action: 'share', primary: false }
+            ],
+            profileData: { distance: '1.2km' },
+            stickText: '免单', 
+            stickColor: 'bg-[#FFD700]', 
+            stickBorder: 'border-yellow-700'
+          },
+          redPacketScenarios: [
+            {
+              id: 'A',
+              type: 'red_packet',
+              title: '【宜 · 甩手掌柜】',
+              hasRedPacket: true,
+              amount: '0.28',
+              actorName: '金牌保洁 · 张阿姨',
+              actorRole: '热心肠阿姨',
+              actorAvatarColor: 'bg-pink-500',
+              speech: '把时间浪费在美好的事物上，才不算虚度。愿您的生活窗明几净，心中无尘。这点小小心意请收下，愿您哪怕偷得半日闲，也是岁月静好。',
+              buttons: [{ text: '看看社区谁在送祝福', action: 'gold_list', primary: true }],
+              stickText: '现金红包',
+              stickColor: 'bg-red-500',
+              stickBorder: 'border-red-800'
+            },
+          ],
+          blessings: [
+            {
+              id: 'D',
+              type: 'blessing', 
+              title: '【财运 · 爆棚】',
+              hasRedPacket: false,
+              actorName: '社区合伙人 · 老陈',
+              actorRole: '凡尔赛邻居',
+              actorAvatarColor: 'bg-green-600',
+              speech: '与其转发锦鲤，不如自己做锦鲤！社区的张阿姨上个月利用空闲时间接单，赚了 1280 元。现在来‘邻工季’搞副业，不仅能创收，还能领新春专属红包，你要不要也来试试？',
+              buttons: [{ text: '去邻工季看看', action: 'visit_job_season', primary: true }],
+              stickText: '马上加薪',
+              stickColor: 'bg-yellow-200', 
+              stickBorder: 'border-yellow-700'
+            },
+            {
+              id: 'E',
+              type: 'blessing',
+              title: '【上上签 · 平安】',
+              hasRedPacket: false,
+              actorName: '社区保安 · 老张',
+              actorRole: '安全卫士',
+              actorAvatarColor: 'bg-indigo-600',
+              speech: '不管多晚回家，小区的灯我都为你留着。出入平安，就是最大的福气。',
+              buttons: [{ text: '给他点个赞', action: 'like', primary: true }],
+              stickText: '上上签', 
+              stickColor: 'bg-yellow-200',
+              stickBorder: 'border-yellow-700'
+            },
+            {
+              id: 'F',
+              type: 'blessing',
+              title: '【上上签 · 暖胃】',
+              hasRedPacket: false,
+              actorName: '外卖小哥 · 小李',
+              actorRole: '城市骑士',
+              actorAvatarColor: 'bg-orange-500',
+              speech: '忙归忙，别忘了一日三餐。按时吃饭，身体才是革命的本钱。',
+              buttons: [{ text: '给他点个赞', action: 'like', primary: true }],
+              stickText: '马到成功', 
+              stickColor: 'bg-yellow-200',
+              stickBorder: 'border-yellow-700'
+            }
+          ]
+        };
 
-    <!-- 1. 档案查看弹窗 -->
-    <div class="modal-profile" id="profileModal">
-        <div class="profile-card">
-            <div style="position:absolute; top:15px; right:15px; font-size:24px; color:#999; z-index:10;" onclick="closeProfile()">×</div>
+        const MARQUEE_DATA = [
+          "恭喜 138****1234 抽中【全品类免单】，王师傅买单！",
+          "恭喜 159****9876 刚刚提现 0.88 元红包！",
+          "恭喜 186****5678 获得 50元 维修基金！"
+        ];
+
+        const FIREWORKS = Array.from({ length: 15 }).map((_, i) => ({
+          id: i,
+          left: `${Math.random() * 100}%`,
+          top: `${Math.random() * 100}%`,
+          delay: `${Math.random() * 2}s`,
+          color: ['bg-yellow-400', 'bg-red-500', 'bg-orange-400'][Math.floor(Math.random() * 3)]
+        }));
+
+        function DailyShakeAppV2() {
+          const [viewState, setViewState] = useState('home'); // home, shaking, revealing, modal_*, page_*
+          const [shakeResult, setShakeResult] = useState(null);
+          const [showShareModal, setShowShareModal] = useState(false);
+          const [showSurprise, setShowSurprise] = useState(false);
+          const [marqueeIndex, setMarqueeIndex] = useState(0);
+          const [shakeCount, setShakeCount] = useState(3);
+          const [toastMessage, setToastMessage] = useState(null);
+
+          useEffect(() => {
+            const interval = setInterval(() => {
+              setMarqueeIndex((prev) => (prev + 1) % MARQUEE_DATA.length);
+            }, 3000);
+            return () => clearInterval(interval);
+          }, []);
+
+          const showToast = (msg) => {
+            setToastMessage(msg);
+            setTimeout(() => setToastMessage(null), 2000);
+          };
+
+          const handleShake = () => {
+            if (shakeCount <= 0) {
+                showToast("今日次数已用完，请分享给好友！");
+                return;
+            }
+            setViewState('shaking');
             
-            <div class="p-header">
-                <div class="p-avatar">
-                    <img id="pAvatarImg" src="" alt="头像">
-                </div>
-                <div class="p-info">
-                    <h2 id="pName">服务者姓名</h2>
-                    <div class="p-tags" id="pTags" style="margin-top:5px;">
-                        <!-- 标签 -->
-                    </div>
-                </div>
-            </div>
-
-            <div class="p-stats">
-                <div class="p-stat"><b id="pOrders">0</b>总接单</div>
-                <div class="p-stat"><b id="pScore">0</b>评分</div>
-                <div class="p-stat"><b id="pAge">0</b>年龄</div>
-            </div>
-
-            <div class="p-secret">
-                <div style="font-weight:bold; margin-bottom:15px; color:#333;">隐私信息 (已加密)</div>
-                
-                <div class="secret-row">
-                    <span>当前距离</span>
-                    <div class="blur-strip" style="width:100px;">0.12km</div>
-                </div>
-                <div class="secret-row">
-                    <span>常驻地址</span>
-                    <div class="blur-strip" style="width:140px;">朝阳区青年路</div>
-                </div>
-                <div class="secret-row">
-                    <span>最近服务</span>
-                    <div class="blur-strip" style="width:160px;">万科城市花园A区</div>
-                </div>
-                
-                <div style="font-size:12px; color:#999; margin-top:10px; line-height:1.4;">
-                    * 为保护服务者隐私，具体位置信息仅在中奖后展示。<br>
-                    请根据<b>“高手线索提示”</b>提供的方位和特征进行推理。
-                </div>
-            </div>
-
-            <div class="p-actions">
-                <button class="btn btn-outline" onclick="closeProfile()">再看看别人</button>
-                <button class="btn btn-primary" onclick="confirmGuess()">选TA！确定</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 2. 情绪反馈/线索弹窗 -->
-    <div class="modal-feedback" id="feedbackModal">
-        <div class="fb-card">
-            <span class="fb-icon" id="fbIcon">😭</span>
-            <h3 class="fb-title" id="fbTitle">哎呀选错了！</h3>
-            <p class="fb-msg" id="fbMsg">
-                免单大奖差点就到手了！<br>别灰心，偷偷给你一个关键线索！
-            </p>
-            
-            <!-- 核心：线索展示区 -->
-            <div class="clue-box" id="clueBox">
-                <span class="clue-icon">🧭</span>
-                <span id="clueText">线索：真正的福星在你的【东南方向】</span>
-            </div>
-
-            <button class="btn btn-primary" style="width:100%" onclick="closeFeedback()">
-                知道了，继续猜
-            </button>
-        </div>
-    </div>
-
-<script>
-    // --- 游戏数据配置 ---
-    // 增加了 img 字段，使用 pravatar.cc 的随机头像
-    const providers = [
-        { id: 1, name: "李师傅", job: "维修", gender:"男", age:"80后", orders: 1200, score: 4.9, img: "https://i.pravatar.cc/150?img=11", isTarget: true,  pos: {x: 75, y: 72} }, 
-        { id: 2, name: "王阿姨", job: "保洁", gender:"女", age:"70后", orders: 890,  score: 5.0, img: "https://i.pravatar.cc/150?img=5", isTarget: false, pos: {x: 20, y: 20} },
-        { id: 3, name: "张教练", job: "私教", gender:"男", age:"90后", orders: 320,  score: 4.8, img: "https://i.pravatar.cc/150?img=3", isTarget: false, pos: {x: 80, y: 20} },
-        { id: 4, name: "赵医生", job: "宠医", gender:"女", age:"90后", orders: 560,  score: 4.9, img: "https://i.pravatar.cc/150?img=9", isTarget: false, pos: {x: 20, y: 70} },
-        // 修正坐标，避开 15%-20% top 的标题区域
-        { id: 5, name: "陈师傅", job: "开锁", gender:"男", age:"80后", orders: 2100, score: 5.0, img: "https://i.pravatar.cc/150?img=13", isTarget: false, pos: {x: 50, y: 28} }, // 原15改28
-        { id: 6, name: "吴大姐", job: "月嫂", gender:"女", age:"70后", orders: 150,  score: 4.7, img: "https://i.pravatar.cc/150?img=20", isTarget: false, pos: {x: 10, y: 45} }, // 原15改10
-        { id: 7, name: "郑小哥", job: "跑腿", gender:"男", age:"00后", orders: 3400, score: 4.9, img: "https://i.pravatar.cc/150?img=14", isTarget: false, pos: {x: 85, y: 50} },
-        { id: 8, name: "孙技师", job: "美甲", gender:"女", age:"90后", orders: 400,  score: 4.8, img: "https://i.pravatar.cc/150?img=24", isTarget: false, pos: {x: 50, y: 75} },
-        { id: 9, name: "周老师", job: "家教", gender:"女", age:"00后", orders: 200,  score: 5.0, img: "https://i.pravatar.cc/150?img=32", isTarget: false, pos: {x: 35, y: 38} }, // 原35改38
-        { id: 10, name: "刘司机", job: "搬家", gender:"男", age:"80后", orders: 900,  score: 4.8, img: "https://i.pravatar.cc/150?img=53", isTarget: false, pos: {x: 65, y: 60} }
-    ];
-
-    let gameState = {
-        propCount: 2,
-        currentSelect: null,
-        eliminatedIds: [],
-        hintLevel: 0
-    };
-
-    const targetProvider = providers.find(p => p.isTarget);
-    const mapArea = document.getElementById('mapArea');
-
-    // --- 1. 初始化地图 (散点生成) ---
-    function initMap() {
-        providers.forEach(p => {
-            const el = document.createElement('div');
-            el.className = 'avatar-node';
-            el.id = `avatar-${p.id}`;
-            // 设置位置
-            el.style.left = p.pos.x + '%';
-            el.style.top = p.pos.y + '%';
-            // 真实头像：插入图片
-            el.innerHTML = `
-                <img src="${p.img}" alt="${p.name}">
-                <div class="avatar-label">${p.job}</div>
-            `;
-            
-            // 浮动动画 (随机延迟)
-            el.style.animation = `float 3s ease-in-out infinite`;
-            el.style.animationDelay = `${Math.random() * 2}s`;
-            
-            el.onclick = () => openProfile(p);
-            mapArea.appendChild(el);
-        });
-
-        // 添加简单的浮动关键帧
-        const styleSheet = document.createElement("style");
-        styleSheet.innerText = `@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }`;
-        document.head.appendChild(styleSheet);
-    }
-
-    // --- 2. 档案交互 ---
-    function openProfile(p) {
-        if (gameState.eliminatedIds.includes(p.id)) return;
-        
-        gameState.currentSelect = p;
-        
-        // 填充数据
-        document.getElementById('pAvatarImg').src = p.img;
-        document.getElementById('pName').innerText = p.name;
-        document.getElementById('pOrders').innerText = p.orders;
-        document.getElementById('pScore').innerText = p.score;
-        document.getElementById('pAge').innerText = p.age;
-        
-        document.getElementById('pTags').innerHTML = `
-            <span>${p.gender}</span>
-            <span>${p.job}</span>
-            <span>实名认证</span>
-        `;
-        
-        document.getElementById('profileModal').style.display = 'flex';
-    }
-
-    function closeProfile() {
-        document.getElementById('profileModal').style.display = 'none';
-    }
-
-    // --- 3. 核心游戏逻辑：猜测判定 ---
-    function confirmGuess() {
-        closeProfile();
-        const p = gameState.currentSelect;
-
-        if (p.isTarget) {
-            // 猜对了 (Win)
-            showFeedback(
-                "🎉 恭喜中奖！",
-                `太神了！真正的福星就是<b>${p.name}</b>！<br>TA就在你东南方向 0.12km 处！`,
-                "🎁", 
-                `请前往卡包查收免单券`
-            );
-        } else {
-            // 猜错了 (Fail -> Hint)
-            eliminateAvatar(p.id);
-            
-            const hint = generateSmartHint();
-            showFeedback(
-                "😭 哎呀选错了！",
-                `${p.name} 离你太远了！<br>免单机会正在流失，快看下面的线索！`,
-                "🧭",
-                hint
-            );
-        }
-    }
-
-    // --- 4. 道具逻辑：主动偷看 ---
-    function useProp() {
-        if (gameState.propCount <= 0) {
-            alert("偷看次数已用完！");
-            return;
-        }
-        
-        gameState.propCount--;
-        document.getElementById('propCount').innerText = gameState.propCount;
-        
-        const hint = generateSmartHint();
-        showFeedback(
-            "👀 偷看成功！",
-            "你消耗了一张偷看卡，获取了关于目标的重要情报！",
-            "🕵️‍♀️",
-            hint
-        );
-    }
-
-    // --- 5. 智能线索生成系统 ---
-    function generateSmartHint() {
-        let hintText = "";
-        const t = targetProvider;
-        
-        switch(gameState.hintLevel % 4) {
-            case 0:
-                let dir = "";
-                if (t.pos.y > 60) dir += "南";
-                else if (t.pos.y < 40) dir += "北";
-                if (t.pos.x > 60) dir += "东";
-                else if (t.pos.x < 40) dir += "西";
-                if (dir === "") dir = "正中";
-                hintText = `目标位置线索：TA在你的 <b>${dir}方向</b>`;
-                break;
-            case 1:
-                hintText = `目标身份线索：TA是一位 <b>${t.age} ${t.gender}性</b> 服务者`;
-                break;
-            case 2:
-                hintText = `目标特征线索：TA的职业是 <b>${t.job}</b> (接单量 ${t.orders}+)`;
-                break;
-            case 3:
-                hintText = `终极线索：目标名字里带有 <b>“${t.name[0]}”</b> 字`;
-                break;
-        }
-        
-        gameState.hintLevel++;
-        return hintText;
-    }
-
-    // --- 6. 反馈弹窗控制 ---
-    function showFeedback(title, msg, icon, clue) {
-        document.getElementById('fbTitle').innerText = title;
-        document.getElementById('fbMsg').innerHTML = msg;
-        document.getElementById('fbIcon').innerText = icon;
-        document.getElementById('clueText').innerHTML = clue;
-        
-        document.getElementById('feedbackModal').style.display = 'flex';
-    }
-
-    function closeFeedback() {
-        document.getElementById('feedbackModal').style.display = 'none';
-    }
-
-    // --- 7. 视觉效果：消除 ---
-    function eliminateAvatar(id) {
-        gameState.eliminatedIds.push(id);
-        const el = document.getElementById(`avatar-${id}`);
-        if (el) {
-            el.classList.add('dead');
             setTimeout(() => {
-                el.style.display = 'none';
-            }, 300);
+              setShakeCount(prev => prev - 1);
+              
+              const rand = Math.random();
+              let result;
+              
+              if (rand < 0.1) {
+                result = DATA_CONFIG.koi;
+              } else if (rand < 0.5) {
+                const scenarios = DATA_CONFIG.redPacketScenarios;
+                result = scenarios[Math.floor(Math.random() * scenarios.length)];
+              } else {
+                const blessings = DATA_CONFIG.blessings;
+                result = blessings[Math.floor(Math.random() * blessings.length)];
+              }
+              
+              setShakeResult(result);
+              setViewState('revealing');
+
+              setTimeout(() => {
+                  if (result.type === 'koi' || result.type === 'red_packet') {
+                      setViewState('modal_redpacket');
+                  } else {
+                      setViewState('modal_result');
+                  }
+              }, 1200);
+
+            }, 1500);
+          };
+
+          const handleOpenRedPacket = () => {
+            setViewState('modal_result');
+          };
+
+          const handleCloseModal = () => {
+            setViewState('home');
+          };
+
+          const handleCloseShareModal = () => {
+            setShowShareModal(false);
+            if (Math.random() > 0.5) {
+                setTimeout(() => {
+                    setShowSurprise(true);
+                }, 1000);
+            }
+          };
+
+          const handleResultAction = (action) => {
+            if (action === 'gold_list') {
+              setViewState('page_gold_list');
+            } else if (action === 'share') {
+              setShowShareModal(true);
+            } else if (action === 'like') {
+              showToast("点赞成功！感谢您的鼓励 ❤️");
+              setTimeout(() => {
+                setViewState('home');
+              }, 1500);
+            } else if (action === 'visit_job_season') {
+              // 处理去邻工季的逻辑
+              showToast("正在前往邻工季...");
+              // 实际开发中这里会做跳转
+            }
+          };
+
+          const handleCardClick = (worker) => {
+            setShakeResult({
+              actorName: worker.name,
+              actorRole: worker.role,
+              actorAvatarColor: worker.avatarColor,
+              avatarUrl: worker.avatarUrl,
+              profileData: {
+                 distance: worker.distance || '0.5km',
+                 skills: worker.skills,
+                 review: "非常专业，服务态度好！", 
+                 serviceCount: worker.servedCount || worker.reviews,
+                 experience: worker.experience || '多年从业经验',
+                 cases: worker.cases || ['服务案例1', '服务案例2']
+              }
+            });
+            setViewState('page_profile');
+          };
+
+          const Marquee = () => (
+            <div className="bg-black/20 text-white/90 text-xs py-1.5 px-4 rounded-full backdrop-blur-sm inline-flex items-center gap-2 max-w-[90%] overflow-hidden mx-auto mt-2 border border-white/10">
+               <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
+               <div className="animate-fade-in key={marqueeIndex}">
+                 {MARQUEE_DATA[marqueeIndex]}
+               </div>
+            </div>
+          );
+
+          const Toast = () => {
+            if (!toastMessage) return null;
+            return (
+              <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[80] bg-black/80 text-white px-6 py-3 rounded-lg shadow-xl text-sm font-medium animate-fade-in flex items-center gap-2">
+                 <ThumbsUp className="w-4 h-4 text-yellow-400" />
+                 {toastMessage}
+              </div>
+            );
+          };
+
+          const CloseButton = ({ onClick }) => (
+            <button 
+                onClick={onClick} 
+                className="absolute top-4 right-4 z-50 w-8 h-8 flex items-center justify-center bg-black/30 backdrop-blur-sm text-white rounded-full border border-white/20 hover:bg-black/50 transition-all active:scale-95"
+            >
+               <X className="w-5 h-5" />
+            </button>
+          );
+
+          // 1. 主会场
+          const renderHome = () => {
+            if (viewState === 'page_gold_list' || viewState === 'page_profile') {
+                return null;
+            }
+
+            return (
+                <div className="relative flex flex-col min-h-screen bg-gradient-to-b from-[#D92C2C] to-[#A61B1B] overflow-x-hidden">
+                  <div className="pt-2 pb-1 text-center z-20 flex-shrink-0">
+                    <h1 className="text-4xl font-black text-[#FFE699] drop-shadow-[0_2px_2px_rgba(0,0,0,0.3)] tracking-wide" style={{ fontFamily: 'serif' }}>
+                      摇好运，拿免单
+                    </h1>
+                    <div className="flex items-center justify-center gap-2 mt-1">
+                       <div className="h-[1px] w-4 bg-[#FFE699]/50"></div>
+                       <p className="text-white text-base font-medium tracking-widest text-shadow">邻工送好礼 · 天天上上签</p>
+                       <div className="h-[1px] w-4 bg-[#FFE699]/50"></div>
+                    </div>
+                    <Marquee />
+                  </div>
+
+                  {/* 互动区域 */}
+                  <div className="flex-1 relative flex flex-col items-center justify-center z-10 py-4 min-h-[450px] mt-24"> 
+                    
+                    {/* 气泡 */}
+                    <div className="absolute inset-0 pointer-events-none">
+                       <div className="absolute top-1/4 left-8 animate-[float_3s_ease-in-out_infinite]">
+                         <div className="w-16 h-16 rounded-full bg-gradient-to-br from-yellow-200/40 to-yellow-500/10 backdrop-blur-sm border border-yellow-200/50 flex items-center justify-center shadow-lg">
+                            <span className="text-yellow-100 font-bold text-xs drop-shadow-md">免单</span>
+                         </div>
+                       </div>
+                       <div className="absolute top-1/3 right-6 animate-[float_4s_ease-in-out_infinite_1s]">
+                         <div className="w-14 h-14 rounded-full bg-gradient-to-br from-red-200/30 to-red-500/10 backdrop-blur-sm border border-white/30 flex items-center justify-center shadow-lg">
+                            <span className="text-white font-bold text-xs drop-shadow-md">上上签</span>
+                         </div>
+                       </div>
+                       <div className="absolute bottom-1/3 left-12 animate-[float_3.5s_ease-in-out_infinite_0.5s]">
+                         <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-200/30 to-orange-500/10 backdrop-blur-sm border border-orange-200/40 flex items-center justify-center shadow-lg">
+                            <span className="text-orange-100 font-bold text-[10px] drop-shadow-md">现金红包</span>
+                         </div>
+                       </div>
+                    </div>
+
+                    {/* 摇签主体 */}
+                    <div className={`relative mt-4 cursor-pointer transition-transform ${viewState === 'shaking' ? 'animate-[shake_0.8s_ease-in-out_infinite]' : ''}`} onClick={handleShake}>
+                       
+                       {/* 出签展示动画 */}
+                       {viewState === 'revealing' && shakeResult && (
+                           <div className="absolute left-1/2 -translate-x-1/2 -top-20 z-20 animate-[reveal-stick_0.5s_ease-out_forwards]">
+                               <div className={`w-10 h-48 ${shakeResult.stickColor || 'bg-yellow-200'} rounded-t-md border-2 ${shakeResult.stickBorder || 'border-yellow-700'} shadow-xl flex items-start justify-center pt-4`}>
+                                    <span className={`text-lg ${shakeResult.stickColor === 'bg-red-500' ? 'text-yellow-100' : 'text-red-900'} font-black writing-vertical tracking-widest`}>{shakeResult.stickText}</span>
+                               </div>
+                           </div>
+                       )}
+
+                       <div className="absolute -inset-10 bg-yellow-500/20 blur-2xl rounded-full"></div>
+                       
+                       <div className="w-36 h-48 bg-gradient-to-r from-yellow-700 via-yellow-500 to-yellow-800 rounded-b-3xl rounded-t-lg border-x-2 border-b-4 border-yellow-900 shadow-2xl relative z-20 flex justify-center overflow-hidden">
+                          <div className="absolute top-8 w-full h-1 bg-yellow-900/30"></div>
+                          <div className="absolute bottom-8 w-full h-1 bg-yellow-900/30"></div>
+                          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/wood-pattern.png')] opacity-30 mix-blend-overlay"></div>
+                          <div className="mt-14 w-14 h-14 bg-red-700/90 rounded-full flex items-center justify-center border-2 border-yellow-300 shadow-inner">
+                             <span className="text-2xl font-serif text-yellow-100 font-bold">吉</span>
+                          </div>
+                       </div>
+
+                       {/* 签子群 */}
+                       {viewState !== 'revealing' && (
+                           <div className="absolute -top-24 left-0 w-full h-full z-10 pointer-events-none">
+                              <div className="absolute left-[15%] top-4 transform -rotate-[20deg] origin-bottom">
+                                 <div className={`w-8 h-36 bg-yellow-200 rounded-t-md border border-yellow-700 shadow-md flex items-start justify-center pt-2 ${viewState === 'shaking' ? 'animate-[stickMove_0.3s_infinite_0s]' : ''}`}>
+                                    <span className="text-sm text-red-800 font-bold writing-vertical">上上签</span>
+                                 </div>
+                              </div>
+                              <div className="absolute left-[30%] top-0 transform -rotate-[10deg] origin-bottom">
+                                 <div className={`w-8 h-40 bg-red-500 rounded-t-md border border-red-800 shadow-md flex items-start justify-center pt-2 ${viewState === 'shaking' ? 'animate-[stickMove_0.35s_infinite_0.1s]' : ''}`}>
+                                    <span className="text-xs text-yellow-100 font-bold writing-vertical">现金红包</span>
+                                 </div>
+                              </div>
+                              <div className="absolute left-[45%] -top-4 transform rotate-0 origin-bottom z-10">
+                                 <div className={`w-9 h-44 bg-[#FFD700] rounded-t-md border border-yellow-700 shadow-lg flex items-start justify-center pt-2 ${viewState === 'shaking' ? 'animate-[stickMove_0.25s_infinite_0.05s]' : ''}`}>
+                                    <span className="text-base text-red-900 font-black writing-vertical tracking-widest">免单</span>
+                                 </div>
+                              </div>
+                              <div className="absolute left-[60%] top-0 transform rotate-[10deg] origin-bottom">
+                                 <div className={`w-8 h-40 bg-yellow-200 rounded-t-md border border-yellow-700 shadow-md flex items-start justify-center pt-2 ${viewState === 'shaking' ? 'animate-[stickMove_0.33s_infinite_0.15s]' : ''}`}>
+                                    <span className="text-xs text-red-800 font-bold writing-vertical">马上加薪</span>
+                                 </div>
+                              </div>
+                              <div className="absolute left-[75%] top-4 transform rotate-[20deg] origin-bottom">
+                                 <div className={`w-8 h-36 bg-yellow-200 rounded-t-md border border-yellow-700 shadow-md flex items-start justify-center pt-2 ${viewState === 'shaking' ? 'animate-[stickMove_0.28s_infinite_0.2s]' : ''}`}>
+                                    <span className="text-sm text-red-800 font-bold writing-vertical">马到成功</span>
+                                 </div>
+                              </div>
+                           </div>
+                       )}
+
+                       <div className="absolute bottom-4 -left-4 z-30 w-14 h-20 bg-[#f5d0b0] rounded-r-3xl border-l-0 border-2 border-[#e6b89c] rotate-12 shadow-lg"></div>
+                       <div className="absolute bottom-4 -right-4 z-30 w-14 h-20 bg-[#f5d0b0] rounded-l-3xl border-r-0 border-2 border-[#e6b89c] -rotate-12 shadow-lg"></div>
+                    </div>
+
+                    <div className="mt-8 z-20 flex flex-col items-center">
+                      <button 
+                         onClick={handleShake}
+                         className="btn-shine bg-gradient-to-b from-yellow-300 to-yellow-500 text-red-900 text-xl font-black py-4 px-12 rounded-full shadow-[0_6px_0_#b45309,0_15px_20px_rgba(0,0,0,0.3)] active:shadow-[0_2px_0_#b45309] active:translate-y-1 transition-all border-2 border-yellow-200"
+                      >
+                         摇 一 摇
+                      </button>
+                      
+                      {/* 今日摇签数 + 我的奖励 */}
+                      <div className="mt-8 flex items-center gap-4">
+                          <div className="px-4 h-8 rounded-full bg-black/20 text-[#FFE699] text-xs font-medium backdrop-blur-sm border border-white/10 shadow-sm flex items-center justify-center">
+                              今日摇签数：<span className="font-bold text-white text-base ml-1">{shakeCount}</span>
+                          </div>
+                          <div 
+                              onClick={() => showToast('查看我的奖励')}
+                              className="px-4 h-8 rounded-full bg-black/20 text-[#FFE699] text-xs font-medium backdrop-blur-sm border border-white/10 shadow-sm flex items-center justify-center gap-1 cursor-pointer active:bg-black/30 transition-colors"
+                          >
+                              我的奖励 <ChevronRight className="w-3 h-3" />
+                          </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 底部功能区 */}
+                  <div className="bg-white rounded-t-3xl pt-6 pb-8 shadow-[0_-4px_20px_rgba(0,0,0,0.2)] z-30 relative flex flex-col gap-8 w-full mt-auto">
+                    
+                    {/* 1. 任务卡片区 */}
+                    <div className="px-4 flex flex-col gap-4">
+                      
+                      {/* 发好运 */}
+                      <div className="bg-gradient-to-br from-red-50 to-white border border-red-100 rounded-2xl p-4 shadow-sm flex items-center justify-between">
+                        <div className="flex flex-col gap-1">
+                            <div className="flex items-center gap-2 mb-1">
+                                <h3 className="font-bold text-gray-800 text-base flex items-center gap-1">
+                                    <Gift className="w-5 h-5 text-red-500 fill-current" />
+                                    好运接力
+                                </h3>
+                                <span className="text-xs text-gray-500">已成功传递 <span className="text-red-500 font-bold">3</span> 人</span>
+                            </div>
+                            <div>
+                                <p className="text-sm text-gray-800 font-bold mb-0.5">送好友必中红包</p>
+                                <p className="text-xs text-red-500 font-medium">获得免单加速，更有惊喜福利</p>
+                            </div>
+                        </div>
+                        <button 
+                          onClick={() => setShowShareModal(true)}
+                          className="bg-red-500 hover:bg-red-600 text-white text-xs font-bold py-2 px-4 rounded-full shadow-lg shadow-red-200 active:scale-95 transition-transform whitespace-nowrap min-w-[80px]"
+                        >
+                          发好运
+                        </button>
+                      </div>
+
+                      {/* 加企业微信 */}
+                      <div className="bg-gradient-to-br from-blue-50 to-white border border-blue-100 rounded-2xl p-4 shadow-sm flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="bg-blue-100 p-2.5 rounded-full">
+                                <WechatIcon className="w-6 h-6 text-blue-600" />
+                            </div>
+                            <div>
+                                <p className="text-base text-gray-800 font-bold">加企微领福利</p>
+                                <p className="text-xs text-blue-500 font-medium">额外抽签 + 专属服务</p>
+                            </div>
+                        </div>
+                        <button 
+                          onClick={() => showToast('功能开发中，敬请期待')}
+                          className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2 px-4 rounded-full shadow-lg shadow-blue-200 active:scale-95 transition-transform whitespace-nowrap min-w-[80px]"
+                        >
+                          去添加
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* 2. 邻里帮手 · 新春服务 */}
+                    <div className="flex flex-col pl-4">
+                      <div className="flex items-center justify-between mb-3 pr-4">
+                        <h3 className="font-bold text-gray-800 text-base flex items-center gap-1">
+                            <Star className="w-5 h-5 text-yellow-500 fill-current" /> 
+                            邻里帮手 · 新春服务
+                        </h3>
+                        <div 
+                            onClick={() => setViewState('page_gold_list')}
+                            className="text-xs text-gray-500 flex items-center gap-0.5 cursor-pointer active:opacity-70"
+                        >
+                            更多邻里帮手 <ChevronRight className="w-3 h-3" />
+                        </div>
+                      </div>
+                      
+                      <div className="flex gap-4 overflow-x-auto pr-4 pb-4 scrollbar-hide">
+                        {RECOMMENDED_WORKERS.map(worker => (
+                          <div key={worker.id} className="min-w-[240px] w-[240px] bg-white rounded-2xl p-4 shadow-[0_4px_15px_rgba(0,0,0,0.05)] flex flex-col flex-shrink-0 border border-gray-50 relative overflow-hidden">
+                             {/* 顶部装饰条 */}
+                             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-400 to-red-400"></div>
+                             
+                             <div className="flex items-start gap-3 mb-3 mt-1">
+                                <img src={worker.avatarUrl} alt={worker.name} className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-md flex-shrink-0" />
+                                <div className="flex-1 min-w-0">
+                                   <div className="flex items-center gap-2 mb-1">
+                                      <span className="font-bold text-gray-800 text-base truncate">{worker.name}</span>
+                                      <span className="text-[10px] bg-red-50 text-red-600 px-1.5 py-0.5 rounded-md border border-red-100">{worker.role}</span>
+                                   </div>
+                                   <div className="flex items-center gap-1 text-xs text-gray-400">
+                                      <MapPin className="w-3 h-3" />
+                                      <span>本社区 · {worker.distance}</span>
+                                   </div>
+                                </div>
+                             </div>
+                             
+                             {worker.statsText && (
+                                <div className="mb-2">
+                                    <span className="inline-block text-[10px] bg-orange-50 text-orange-700 px-2 py-1 rounded-md font-medium border border-orange-100">
+                                        🔥 {worker.statsText}
+                                    </span>
+                                </div>
+                             )}
+                             
+                             <p className="text-sm text-gray-600 leading-relaxed mb-4 line-clamp-2">
+                                {worker.desc}
+                             </p>
+                             
+                             <div className="mt-auto flex items-center justify-between border-t border-gray-100 pt-3">
+                                <span className="text-xs text-gray-400 flex items-center gap-1">
+                                   <Heart className="w-3 h-3 text-red-400 fill-current" /> {worker.recommendCount} 推荐
+                                </span>
+                                <button 
+                                   onClick={() => handleCardClick(worker)}
+                                   className="text-xs text-gray-600 font-bold active:opacity-70 flex items-center"
+                                >
+                                   查看详情 <ChevronRight className="w-3 h-3" />
+                                </button>
+                             </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    
+                  </div>
+
+                  <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-yellow-200 to-transparent pointer-events-none"></div>
+                </div>
+            );
+          }
+
+          // 2. 遮罩弹窗 - 红包
+          const renderModalRedPacket = () => (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm animate-fade-in px-6">
+              <div className="w-full max-w-sm relative animate-scale-up">
+                 <CloseButton onClick={handleCloseModal} />
+                 
+                 <div className="bg-[#D92C2C] rounded-2xl overflow-hidden shadow-2xl relative aspect-[3/4] flex flex-col items-center border border-red-500">
+                    <div className="absolute -top-20 -left-20 w-60 h-60 bg-red-600 rounded-full blur-3xl opacity-50"></div>
+                    
+                    <div className="w-[120%] h-[40%] bg-[#c02525] rounded-b-[100%] absolute top-0 shadow-lg z-10 flex justify-center pt-8">
+                       <div className={`w-16 h-16 ${shakeResult.actorAvatarColor} rounded-full border-2 border-yellow-200 p-0.5 shadow-md z-20`}>
+                         <div className="w-full h-full rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                            <User className="text-gray-500 w-10 h-10 mt-2" />
+                         </div>
+                       </div>
+                    </div>
+
+                    <div className="mt-28 flex flex-col items-center z-10 w-full px-6">
+                       <h3 className="text-[#FFE699] text-lg font-bold">{shakeResult.actorName}</h3>
+                       <p className="text-red-100/80 text-xs mt-1">给您发了一个好运红包</p>
+                       
+                       <p className="text-[#FFE699] text-2xl font-serif font-bold mt-8 tracking-widest">
+                          祝您诸事顺遂
+                       </p>
+
+                       <button 
+                         onClick={handleOpenRedPacket}
+                         className="mt-12 w-20 h-20 bg-[#FFE699] text-[#D92C2C] rounded-full border-4 border-yellow-100 shadow-[0_0_20px_rgba(255,230,153,0.6)] flex items-center justify-center text-3xl font-black active:scale-95 transition-transform"
+                       >
+                         開
+                       </button>
+                    </div>
+                    
+                    <div className="absolute bottom-4 text-white/30 text-xs">每日一摇 · 上上吉</div>
+                 </div>
+              </div>
+            </div>
+          );
+
+          // 3. 遮罩弹窗 - 结果详情
+          const renderModalResult = () => {
+            const isKoi = shakeResult.type === 'koi';
+            const isBlessing = shakeResult.type === 'blessing';
+            
+            return (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm animate-fade-in p-4">
+                {isKoi && (
+                  <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                     {FIREWORKS.map(fw => (
+                       <div 
+                         key={fw.id} 
+                         className={`absolute w-2 h-2 rounded-full ${fw.color} animate-[ping_1s_ease-out_infinite]`}
+                         style={{ left: fw.left, top: fw.top, animationDelay: fw.delay }}
+                       ></div>
+                     ))}
+                  </div>
+                )}
+
+                <div className="w-full max-w-xs relative animate-scale-up">
+                   <CloseButton onClick={handleCloseModal} />
+
+                   <div className="bg-white rounded-2xl overflow-hidden shadow-2xl relative">
+                      <div className={`h-2 w-full ${isKoi ? 'bg-gradient-to-r from-orange-400 to-red-500' : isBlessing ? 'bg-gradient-to-r from-indigo-400 to-blue-500' : 'bg-red-600'}`}></div>
+
+                      <div className="p-5 text-center pb-2">
+                         <h2 className={`text-2xl font-black tracking-wide ${isKoi ? 'text-orange-600' : isBlessing ? 'text-indigo-800' : 'text-gray-800'}`}>
+                           {shakeResult.title}
+                         </h2>
+                         
+                         {isKoi && (
+                           <div className="absolute top-10 right-4 w-16 h-16 border-4 border-red-500 text-red-500 rounded-full flex items-center justify-center font-bold text-xs rotate-[-12deg] opacity-80 animate-pulse bg-white/80">
+                              <div>
+                                <div>全品类</div>
+                                <div>免单</div>
+                              </div>
+                           </div>
+                         )}
+
+                         {!isKoi && !isBlessing && shakeResult.hasRedPacket && (
+                           <div className="mt-1 flex items-baseline justify-center text-red-500 gap-1">
+                              <span className="text-sm">已入账</span>
+                              <span className="text-3xl font-bold">{shakeResult.amount}</span>
+                              <span className="text-sm">元</span>
+                           </div>
+                         )}
+                         
+                         {isBlessing && (
+                           <div className="mt-2 text-indigo-500 text-xs font-medium">
+                              来自社区服务者的暖心祝福
+                           </div>
+                         )}
+                      </div>
+
+                      <div className="px-5 py-2">
+                         <div className={`rounded-xl p-4 flex gap-3 border ${isBlessing ? 'bg-indigo-50 border-indigo-100' : 'bg-gray-50 border-gray-100'}`}>
+                            <div className="flex-shrink-0 flex flex-col items-center">
+                               <div className={`w-10 h-10 ${shakeResult.actorAvatarColor} rounded-full flex items-center justify-center text-white border border-white shadow-sm`}>
+                                  {isBlessing && shakeResult.actorRole.includes('保安') ? <Shield className="w-5 h-5"/> : <User className="w-6 h-6" />}
+                               </div>
+                               <div className="text-[9px] text-gray-500 mt-1 font-bold">{shakeResult.actorName.split('·')[1]}</div>
+                            </div>
+                            <div className="relative">
+                               <div className={`absolute top-3 -left-1.5 w-3 h-3 bg-white border-l border-b border-gray-200 transform rotate-45`}></div>
+                               <div className="bg-white p-3 rounded-lg border border-gray-200 text-sm text-gray-700 leading-relaxed shadow-sm relative z-10 text-left">
+                                  {shakeResult.speech}
+                               </div>
+                            </div>
+                         </div>
+                      </div>
+
+                      <div className="p-5 pt-2 pb-6">
+                         {isKoi ? (
+                            <div className="space-y-2">
+                              {shakeResult.buttons.map((btn, i) => (
+                                <button
+                                  key={i}
+                                  onClick={() => handleResultAction(btn.action)}
+                                  className={`w-full py-3 rounded-lg font-bold text-sm flex items-center justify-center gap-1
+                                    ${btn.primary ? 'bg-orange-500 text-white shadow-lg shadow-orange-200' : 'bg-white border border-gray-200 text-gray-600'}
+                                  `}
+                                >
+                                  {btn.text}
+                                </button>
+                              ))}
+                            </div>
+                         ) : (
+                            <button
+                              onClick={() => handleResultAction(shakeResult.buttons[0].action)}
+                              className={`w-full py-3.5 rounded-lg font-bold text-base shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-transform
+                                ${isBlessing 
+                                  ? 'bg-indigo-600 text-white shadow-indigo-200 hover:bg-indigo-700' 
+                                  : 'bg-[#D92C2C] text-white shadow-red-100 hover:bg-[#b02020]'
+                                }
+                              `}
+                            >
+                              {shakeResult.buttons[0].text} 
+                              {shakeResult.buttons[0].action === 'like' ? <ThumbsUp className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                            </button>
+                         )}
+                      </div>
+                   </div>
+                </div>
+              </div>
+            );
+          };
+
+          // 4. 金牌服务者列表页 (优化关闭按钮 & 点击跳转二级页)
+          const renderGoldList = () => {
+            return (
+               <div className="absolute inset-0 z-40 bg-gray-50 overflow-y-auto animate-fade-in flex flex-col">
+                  <div className="bg-[#D92C2C] text-white p-4 pt-10 pb-6 shadow-md relative z-10">
+                     <button onClick={() => setViewState('home')} className="absolute top-11 left-4 bg-white/20 p-1.5 rounded-full hover:bg-white/30">
+                       <X className="w-5 h-5"/>
+                     </button>
+                     <h1 className="text-center font-bold text-lg flex items-center justify-center gap-2">
+                       <Heart className="w-5 h-5 text-yellow-300 fill-current" />
+                       邻里高手新春送祝福
+                     </h1>
+                     <p className="text-center text-xs text-red-200 mt-1">
+                        {shakeResult && shakeResult.type === 'koi' ? '锦鲤免单生效中 · 严选优质服务' : '新春福气到 · 邻里互助暖人心'}
+                     </p>
+                  </div>
+                  
+                  <div className="flex-1 p-4 space-y-3 pb-20">
+                     {GOLD_PROVIDERS.map(provider => (
+                       <div key={provider.id} className="bg-white rounded-xl p-4 shadow-sm flex gap-4 items-center">
+                          <img src={provider.avatarUrl} alt={provider.name} className="w-14 h-14 rounded-full object-cover border-2 border-gray-100 shadow-sm flex-shrink-0" />
+                          <div className="flex-1">
+                             <div className="flex justify-between items-start">
+                                <div>
+                                  <h3 className="font-bold text-gray-800">{provider.name} <span className="text-xs font-normal text-gray-500 bg-gray-100 px-1 rounded ml-1">{provider.role}</span></h3>
+                                  <div className="flex items-center gap-1 mt-1">
+                                     <div className="flex text-yellow-400">
+                                       <Star className="w-3 h-3 fill-current" />
+                                     </div>
+                                     <span className="text-xs text-gray-500 font-bold">{provider.rating}</span>
+                                     <span className="text-[10px] text-gray-400">({provider.reviews}单)</span>
+                                  </div>
+                                </div>
+                                {/* 找TA帮忙 -> 跳转二级主页 */}
+                                <button onClick={() => handleCardClick(provider)} className="bg-red-50 text-red-600 text-xs font-bold px-3 py-1.5 rounded-full border border-red-100 active:bg-red-100">
+                                   找TA帮忙
+                                </button>
+                             </div>
+                             <div className="flex gap-2 mt-2 items-center flex-wrap">
+                                {provider.skills.map((skill, i) => (
+                                  <span key={i} className="text-[10px] text-gray-500 bg-gray-50 px-1.5 py-0.5 rounded border border-gray-100">
+                                     {skill}
+                                  </span>
+                                ))}
+                                
+                                {provider.blessingsSent > 0 && (
+                                  <span className="text-[10px] text-red-500 bg-red-50 px-1.5 py-0.5 rounded border border-red-100 flex items-center gap-1">
+                                     <Heart className="w-3 h-3 fill-current" /> 已送祝福 {provider.blessingsSent} 次
+                                  </span>
+                                )}
+                             </div>
+                          </div>
+                       </div>
+                     ))}
+                     
+                     <div className="text-center text-xs text-gray-400 mt-4">--- 已经到底啦 ---</div>
+                  </div>
+               </div>
+            );
+          };
+
+          // 5. 个人主页渲染 (二级页)
+          const renderProfile = () => {
+             if (!shakeResult) return null;
+             const { actorName, profileData, actorAvatarColor } = shakeResult;
+             return (
+               <div className="absolute inset-0 z-40 bg-gray-50 overflow-y-auto animate-fade-in flex flex-col bg-gray-50">
+                  <div className="h-40 bg-gray-800 relative flex-shrink-0">
+                     <button onClick={() => setViewState('home')} className="absolute top-4 left-4 bg-black/30 p-2 rounded-full text-white z-20">
+                       <X className="w-5 h-5"/>
+                     </button>
+                     <div className="absolute bottom-0 w-full h-10 bg-gray-50 rounded-t-3xl"></div>
+                  </div>
+                  
+                  <div className="px-6 -mt-16 relative z-10 flex-1">
+                     <div className="flex justify-between items-end">
+                        <div className={`w-20 h-20 ${actorAvatarColor} rounded-full border-4 border-white shadow-md flex items-center justify-center overflow-hidden bg-white`}>
+                           {shakeResult.avatarUrl ? (
+                               <img src={shakeResult.avatarUrl} alt={actorName} className="w-full h-full object-cover" />
+                           ) : (
+                               <User className="text-gray-300 w-10 h-10" />
+                           )}
+                        </div>
+                        <button className="bg-red-50 text-red-500 px-3 py-1 rounded-full text-xs font-bold mb-2 flex items-center gap-1">
+                           <Heart className="w-3 h-3 fill-current" /> 关注
+                        </button>
+                     </div>
+                     <h1 className="text-xl font-bold mt-2 text-gray-800">{actorName}</h1>
+                     <p className="text-xs text-gray-500 mt-1">服务社区：{profileData.distance} 内 | 评分 5.0</p>
+                     
+                     <div className="flex flex-wrap gap-2 mt-4">
+                        {profileData.skills.map(s => (
+                           <span key={s} className="px-2 py-1 bg-gray-200 text-gray-600 text-xs rounded">{s}</span>
+                        ))}
+                     </div>
+
+                     {/* 评价 */}
+                     <div className="mt-6 bg-white p-4 rounded-xl shadow-sm">
+                        <div className="text-sm font-bold mb-2">最新评价</div>
+                        <p className="text-xs text-gray-600 leading-relaxed">"{profileData.review}"</p>
+                        <div className="flex text-yellow-400 mt-2"><Star className="w-3 h-3 fill-current"/><Star className="w-3 h-3 fill-current"/><Star className="w-3 h-3 fill-current"/><Star className="w-3 h-3 fill-current"/><Star className="w-3 h-3 fill-current"/></div>
+                     </div>
+
+                     {/* 从业经历 (新) */}
+                     <div className="mt-4 bg-white p-4 rounded-xl shadow-sm">
+                        <div className="text-sm font-bold mb-2 flex items-center gap-2"><Briefcase className="w-4 h-4 text-gray-500"/>从业经历</div>
+                        <p className="text-xs text-gray-600 leading-relaxed">
+                           {profileData.experience || '多年深耕社区，服务千家万户。始终秉持“客户至上”的服务理念，致力于为您解决生活中的各种小麻烦。'}
+                        </p>
+                     </div>
+
+                     {/* 服务案例 (新 - 图库占位) */}
+                     <div className="mt-4 bg-white p-4 rounded-xl shadow-sm mb-20">
+                        <div className="text-sm font-bold mb-2 flex items-center gap-2"><ImageIcon className="w-4 h-4 text-gray-500"/>服务案例</div>
+                        <div className="grid grid-cols-2 gap-2">
+                           {profileData.cases && profileData.cases.map((c, i) => (
+                              <div key={i} className="relative rounded-lg overflow-hidden aspect-video bg-gray-200">
+                                 <img src={`https://picsum.photos/300/200?random=${i}`} alt="case" className="w-full h-full object-cover" />
+                                 <div className="absolute bottom-0 w-full bg-black/50 text-white text-[10px] px-2 py-1 truncate">{c}</div>
+                              </div>
+                           ))}
+                        </div>
+                     </div>
+                  </div>
+
+                  {/* 底部按钮组 (更新: 双按钮) */}
+                  <div className="fixed bottom-0 w-full p-4 bg-white border-t border-gray-100 flex gap-3 z-20 shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
+                     <button 
+                        className="flex-1 bg-gray-100 text-gray-700 font-bold py-3 rounded-lg flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors"
+                        onClick={() => showToast('已发起咨询')}
+                     >
+                        <MessageCircle className="w-4 h-4" /> 联系问问
+                     </button>
+                     <button 
+                        className="flex-[1.5] bg-red-600 text-white font-bold py-3 rounded-lg shadow-lg shadow-red-200 flex items-center justify-center gap-2 hover:bg-red-700 active:scale-95 transition-transform"
+                        onClick={() => showToast('跳转下单页')}
+                     >
+                        <ShoppingBag className="w-4 h-4" /> 找TA下单
+                     </button>
+                  </div>
+               </div>
+             )
+          };
+
+          // 6. 隐藏惊喜弹窗 (新)
+          const renderSurpriseRedPacket = () => {
+             if (!showSurprise) return null;
+             return (
+                <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/80 backdrop-blur-sm animate-fade-in p-6">
+                   <div className="w-full max-w-sm relative animate-scale-up">
+                      <CloseButton onClick={() => setShowSurprise(false)} />
+                      
+                      <div className="bg-gradient-to-b from-red-500 to-red-700 rounded-3xl p-6 text-center shadow-2xl border-4 border-yellow-300 relative overflow-hidden">
+                         {/* 光效 */}
+                         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-gradient-to-b from-yellow-400/20 to-transparent pointer-events-none"></div>
+                         
+                         <div className="relative z-10">
+                            <h3 className="text-yellow-200 text-xl font-bold mb-2">🎁 隐藏惊喜已触发！</h3>
+                            <p className="text-white/90 text-sm mb-6">您的好友已成功注册领福气<br/>送您一个回馈红包</p>
+                            
+                            <div className="bg-white/10 rounded-xl p-4 mb-6 backdrop-blur-sm border border-white/20">
+                               <div className="text-4xl font-bold text-yellow-300 mb-1">0.18 <span className="text-lg">元</span></div>
+                               <div className="text-xs text-white/70">已存入您的余额</div>
+                            </div>
+
+                            <p className="text-white text-sm font-bold mb-4">“独乐乐不如众乐乐”</p>
+                            
+                            <button 
+                               onClick={() => { setShowSurprise(false); setShowShareModal(true); }}
+                               className="w-full bg-yellow-400 text-red-700 font-bold py-3 rounded-full shadow-lg hover:bg-yellow-300 active:scale-95 transition-transform"
+                            >
+                               继续传递好运
+                            </button>
+                         </div>
+                      </div>
+                   </div>
+                </div>
+             )
+          };
+
+          const renderShareModal = () => {
+            if (!showShareModal) return null;
+            return (
+              <div className="fixed inset-0 z-[60] bg-black/90 flex flex-col items-end p-8" onClick={handleCloseShareModal}>
+                 <div className="text-white text-right space-y-2">
+                    <h3 className="text-xl font-bold">点击右上角发送给朋友</h3>
+                    <p className="text-yellow-400 text-sm">好友领取后，你得免单加速卡！</p>
+                 </div>
+              </div>
+            );
+          };
+
+          return (
+            <div className="w-full h-screen mx-auto max-w-md shadow-2xl overflow-y-auto overflow-x-hidden font-sans text-gray-800 relative select-none scrollbar-hide">
+              {renderHome()}
+              {viewState === 'modal_redpacket' && renderModalRedPacket()}
+              {viewState === 'modal_result' && renderModalResult()}
+              {viewState === 'page_gold_list' && renderGoldList()}
+              {viewState === 'page_profile' && renderProfile()}
+              {renderShareModal()}
+              {renderSurpriseRedPacket()}
+              <Toast />
+            </div>
+          );
         }
-    }
 
-    // --- 倒计时 ---
-    let time = 300; 
-    setInterval(() => {
-        time--;
-        if(time < 0) time = 0;
-        let m = Math.floor(time / 60);
-        let s = time % 60;
-        document.getElementById('timer').innerText = 
-            `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-    }, 1000);
-
-    // 启动
-    initMap();
-
-</script>
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<DailyShakeAppV2 />);
+    </script>
 </body>
 </html>
